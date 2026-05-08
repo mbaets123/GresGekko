@@ -17,7 +17,7 @@ export interface Paragraph {
   infographicUrl: string;
   learningGoals: string[];
   concepts: Concept[];
-  isExtra: boolean;
+  isExtra?: boolean;
 }
 
 export interface Concept {
