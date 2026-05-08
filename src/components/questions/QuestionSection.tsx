@@ -1,0 +1,121 @@
+"use client";
+
+import { useState } from "react";
+import { QuestionCard } from "./QuestionCard";
+import { cn } from "@/lib/utils";
+import type { Question } from "@/types";
+
+const DIFFICULTY_LABELS = [
+  { level: 1, label: "Reproductie", desc: "Kennis onthouden", color: "from-green-400 to-emerald-500" },
+  { level: 2, label: "Toepassen", desc: "Geoefende situaties", color: "from-blue-400 to-cyan-500" },
+  { level: 3, label: "Nieuwe situaties", desc: "Onbekende contexten", color: "from-orange-400 to-amber-500" },
+  { level: 4, label: "Inzicht", desc: "Verbanden leggen", color: "from-purple-400 to-violet-500" },
+];
+
+interface QuestionSectionProps {
+  questions: Question[];
+}
+
+export function QuestionSection({ questions }: QuestionSectionProps) {
+  const [activeLevel, setActiveLevel] = useState<number | null>(null);
+
+  if (questions.length === 0) {
+    return (
+      <section>
+        <div className="mb-5 flex items-center gap-3">
+          <div className="h-1 w-8 rounded-full bg-gres-yellow" />
+          <h3 className="text-lg font-bold text-foreground">Oefenvragen</h3>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {DIFFICULTY_LABELS.map(({ level, label, desc, color }) => (
+            <div
+              key={level}
+              className="group relative overflow-hidden rounded-2xl border bg-card p-5 text-center"
+            >
+              <div className={`absolute top-0 left-0 h-1 w-full bg-gradient-to-r ${color}`} />
+              <div className="mb-2 text-xl text-gres-yellow">
+                {"★".repeat(level)}
+                <span className="text-gres-blue/15">{"★".repeat(4 - level)}</span>
+              </div>
+              <p className="text-sm font-bold text-foreground">{label}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{desc}</p>
+              <p className="mt-3 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+                Binnenkort
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  const questionsPerLevel = DIFFICULTY_LABELS.map(({ level }) => ({
+    level,
+    questions: questions.filter((q) => q.difficulty === level),
+  }));
+
+  const filteredQuestions = activeLevel
+    ? questions.filter((q) => q.difficulty === activeLevel)
+    : [];
+
+  return (
+    <section>
+      <div className="mb-5 flex items-center gap-3">
+        <div className="h-1 w-8 rounded-full bg-gres-yellow" />
+        <h3 className="text-lg font-bold text-foreground">Oefenvragen</h3>
+        <span className="rounded-full bg-gres-blue/10 px-2.5 py-0.5 text-xs font-semibold text-gres-blue">
+          {questions.length} vragen
+        </span>
+      </div>
+
+      {/* Level filters */}
+      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {DIFFICULTY_LABELS.map(({ level, label, desc, color }) => {
+          const count = questionsPerLevel.find((q) => q.level === level)?.questions.length || 0;
+          const isActive = activeLevel === level;
+          return (
+            <button
+              key={level}
+              onClick={() => setActiveLevel(isActive ? null : level)}
+              className={cn(
+                "group relative overflow-hidden rounded-2xl border p-4 text-center transition-all",
+                isActive
+                  ? "border-gres-blue shadow-md bg-gres-blue/5"
+                  : "bg-card hover:shadow-md",
+                count === 0 && "opacity-40 cursor-not-allowed"
+              )}
+              disabled={count === 0}
+            >
+              <div className={`absolute top-0 left-0 h-1 w-full bg-gradient-to-r ${color}`} />
+              <div className="mb-1 text-lg text-gres-yellow">
+                {"★".repeat(level)}
+                <span className="text-gres-blue/15">{"★".repeat(4 - level)}</span>
+              </div>
+              <p className="text-sm font-bold text-foreground">{label}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{desc}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {count} {count === 1 ? "vraag" : "vragen"}
+              </p>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Hint when no level selected */}
+      {!activeLevel && (
+        <p className="text-center text-sm text-muted-foreground py-4">
+          Klik op een niveau hierboven om de vragen te bekijken
+        </p>
+      )}
+
+      {/* Questions */}
+      {filteredQuestions.length > 0 && (
+        <div className="space-y-4">
+          {filteredQuestions.map((q, i) => (
+            <QuestionCard key={q.id} question={q} index={i} />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
