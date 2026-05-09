@@ -15,11 +15,28 @@ interface AIBuddyChatProps {
 }
 
 export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const storageKey = `gresgekko-chat-${paragraphId}`;
+
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Sla berichten op in localStorage
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(storageKey, JSON.stringify(messages));
+    }
+  }, [messages, storageKey]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -104,8 +121,24 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
     inputRef.current?.focus();
   }
 
+  function handleClearChat() {
+    setMessages([]);
+    localStorage.removeItem(storageKey);
+  }
+
   return (
     <div className="flex flex-col overflow-hidden" style={{ height: "100%" }}>
+      {/* Wis gesprek knop */}
+      {messages.length > 0 && (
+        <div className="flex justify-end px-3 pt-2">
+          <button
+            onClick={handleClearChat}
+            className="text-[10px] font-medium text-muted-foreground hover:text-red-500 transition-colors"
+          >
+            🗑️ Wis gesprek
+          </button>
+        </div>
+      )}
       {/* Messages */}
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 && (
