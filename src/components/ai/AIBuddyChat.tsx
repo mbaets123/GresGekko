@@ -30,6 +30,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   // Sla berichten op in localStorage
   useEffect(() => {
@@ -52,6 +53,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
     setMessages(newMessages);
     setInput("");
     setIsLoading(true);
+    abortRef.current = new AbortController();
 
     try {
       const res = await fetch("/api/chat", {
@@ -61,6 +63,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
           messages: newMessages,
           paragraphId,
         }),
+        signal: abortRef.current.signal,
       });
 
       if (!res.ok) {
@@ -76,6 +79,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
       let assistantContent = "";
+      let buffer = "";
 
       setMessages([...newMessages, { role: "assistant", content: "" }]);
 
@@ -83,11 +87,15 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n").filter((l) => l.startsWith("data: "));
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        // Keep the last (potentially incomplete) line in the buffer
+        buffer = lines.pop() || "";
 
         for (const line of lines) {
-          const data = line.slice(6);
+          const trimmed = line.trim();
+          if (!trimmed.startsWith("data: ")) continue;
+          const data = trimmed.slice(6);
           if (data === "[DONE]") continue;
 
           try {
@@ -103,7 +111,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
               return updated;
             });
           } catch {
-            // skip malformed chunks
+            // incomplete JSON, will be completed in next chunk
           }
         }
       }
@@ -121,7 +129,22 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
     inputRef.current?.focus();
   }
 
+  function handleRefresh() {
+    abortRef.current?.abort();
+    setIsLoading(false);
+    // Verwijder het laatste (incomplete) assistant-bericht
+    setMessages((prev) => {
+      const last = prev[prev.length - 1];
+      if (last?.role === "assistant" && !last.content) {
+        return prev.slice(0, -1);
+      }
+      return prev;
+    });
+  }
+
   function handleClearChat() {
+    abortRef.current?.abort();
+    setIsLoading(false);
     setMessages([]);
     localStorage.removeItem(storageKey);
   }
@@ -234,14 +257,24 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
             rows={1}
             className="flex-1 resize-none rounded-xl border border-gres-blue/15 bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gres-blue/30"
           />
-          <Button
-            onClick={() => handleSend()}
-            disabled={!input.trim() || isLoading}
-            size="sm"
-            className="shrink-0 bg-gres-blue hover:bg-gres-blue-light text-white rounded-xl px-3"
-          >
-            ➤
-          </Button>
+          {isLoading ? (
+            <Button
+              onClick={handleRefresh}
+              size="sm"
+              className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-3"
+            >
+              ↻
+            </Button>
+          ) : (
+            <Button
+              onClick={() => handleSend()}
+              disabled={!input.trim()}
+              size="sm"
+              className="shrink-0 bg-gres-blue hover:bg-gres-blue-light text-white rounded-xl px-3"
+            >
+              ➤
+            </Button>
+          )}
         </div>
       </div>
     </div>

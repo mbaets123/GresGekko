@@ -18,6 +18,15 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
 
+  function normalize(text: string): string {
+    return text
+      .trim()
+      .toLowerCase()
+      .replace(/^(de|het|een)\s+/i, "")  // strip lidwoorden
+      .replace(/\s+/g, " ")              // normalize spaties
+      .replace(/[.,!?;:'"()-]/g, "");     // strip leestekens
+  }
+
   function handleSubmit() {
     if (!answer.trim()) return;
     if (question.type === "open") {
@@ -26,8 +35,7 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
       setSubmitted(true);
       return;
     }
-    const correct =
-      answer.trim().toLowerCase() === question.answer.trim().toLowerCase();
+    const correct = normalize(answer) === normalize(question.answer);
     setIsCorrect(correct);
     setSubmitted(true);
   }

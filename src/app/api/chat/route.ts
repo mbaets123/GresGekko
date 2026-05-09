@@ -1,10 +1,56 @@
 import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
 
-export async function POST(req: NextRequest) {
-  const { messages, paragraphId } = await req.json();
+/* ---------- Simple in-memory rate limiter ---------- */
+const rateMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 30; // max requests per window
+const RATE_WINDOW = 60_000; // 1 minute
 
-  if (!paragraphId || !messages?.length) {
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
+    return false;
+  }
+  entry.count++;
+  return entry.count > RATE_LIMIT;
+}
+
+/* ---------- Input validation ---------- */
+const MAX_MESSAGE_LENGTH = 500;
+const MAX_MESSAGES = 20;
+
+function sanitizeMessages(raw: unknown): { role: string; content: string }[] | null {
+  if (!Array.isArray(raw)) return null;
+  const allowed = raw
+    .filter(
+      (m) =>
+        m &&
+        typeof m.role === "string" &&
+        typeof m.content === "string" &&
+        (m.role === "user" || m.role === "assistant") &&
+        m.content.length <= MAX_MESSAGE_LENGTH
+    )
+    .slice(-MAX_MESSAGES);
+  return allowed.length > 0 ? allowed : null;
+}
+
+export async function POST(req: NextRequest) {
+  // Rate limiting
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (isRateLimited(ip)) {
+    return Response.json(
+      { error: "Je stuurt te veel berichten. Wacht even en probeer het opnieuw." },
+      { status: 429 }
+    );
+  }
+
+  const body = await req.json();
+  const paragraphId = typeof body.paragraphId === "string" ? body.paragraphId : null;
+  const messages = sanitizeMessages(body.messages);
+
+  if (!paragraphId || !messages) {
     return Response.json({ error: "Missing data" }, { status: 400 });
   }
 

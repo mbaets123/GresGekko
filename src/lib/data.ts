@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { supabase } from "./supabase";
 import type { Chapter, Paragraph, Concept } from "@/types";
 
@@ -26,9 +27,9 @@ function mapParagraph(
   };
 }
 
-/* ---------- Homepage: alle hoofdstukken (licht) ---------- */
+/* ---------- Homepage: alle hoofdstukken ---------- */
 
-export async function getChapters(): Promise<Chapter[]> {
+export const getChapters = unstable_cache(async function _getChapters(): Promise<Chapter[]> {
   const [chaptersRes, paragraphsRes, goalsRes, conceptsRes] = await Promise.all([
     supabase.from("chapters").select("*").order("order"),
     supabase.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra").order("order"),
@@ -49,11 +50,45 @@ export async function getChapters(): Promise<Chapter[]> {
       .filter((p) => p.chapter_id === ch.id)
       .map((p) => mapParagraph(p, goalsRes.data || [], conceptsRes.data || [])),
   }));
+}, ["chapters-all"], { revalidate: 3600 });
+
+/* ---------- Homepage (licht): alleen chapters + paragraph count ---------- */
+
+export async function getChaptersLight(): Promise<Chapter[]> {
+  const [chaptersRes, paragraphsRes] = await Promise.all([
+    supabase.from("chapters").select("*").order("order"),
+    supabase.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra").order("order"),
+  ]);
+
+  if (chaptersRes.error) throw chaptersRes.error;
+  if (paragraphsRes.error) throw paragraphsRes.error;
+
+  return (chaptersRes.data || []).map((ch) => ({
+    id: ch.id,
+    title: ch.title,
+    description: ch.description,
+    order: ch.order,
+    icon: ch.icon,
+    paragraphs: (paragraphsRes.data || [])
+      .filter((p) => p.chapter_id === ch.id)
+      .map((p): Paragraph => ({
+        id: p.id as string,
+        chapterId: p.chapter_id as string,
+        title: p.title as string,
+        order: p.order as number,
+        videoUrl: "",
+        transcript: "",
+        infographicUrl: "",
+        isExtra: (p.is_extra as boolean) || false,
+        learningGoals: [],
+        concepts: [],
+      })),
+  }));
 }
 
 /* ---------- Hoofdstuk-pagina: één hoofdstuk ---------- */
 
-export async function getChapter(chapterId: string): Promise<Chapter | null> {
+export const getChapter = unstable_cache(async function _getChapter(chapterId: string): Promise<Chapter | null> {
   const { data: ch, error } = await supabase
     .from("chapters")
     .select("*")
@@ -78,7 +113,7 @@ export async function getChapter(chapterId: string): Promise<Chapter | null> {
       mapParagraph(p, goalsRes.data || [], conceptsRes.data || [])
     ),
   };
-}
+}, ["chapter"], { revalidate: 3600 });
 
 /* ---------- Paragraaf-pagina: één paragraaf + chapter context ---------- */
 

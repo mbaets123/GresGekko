@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { QuestionSection } from "@/components/questions/QuestionSection";
 import { AIBuddyChat } from "@/components/ai/AIBuddyChat";
 import { HighlightText } from "@/components/ui/highlight-text";
+import { ConceptChip } from "@/components/ui/ConceptChip";
 import { getParagraph } from "@/lib/data";
 import { getQuestions } from "@/lib/questions";
 
@@ -80,18 +81,7 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {paragraph.concepts.map((concept, i) => (
-                    <span
-                      key={i}
-                      className="group relative inline-flex items-center rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold text-gres-blue shadow-sm cursor-default transition-colors hover:bg-gres-blue/10"
-                    >
-                      {concept.term}
-                      {concept.definition && (
-                        <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-normal rounded-xl bg-gres-blue px-3 py-2 text-xs font-normal text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 w-max max-w-[220px] text-center">
-                          {concept.definition}
-                          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gres-blue" />
-                        </span>
-                      )}
-                    </span>
+                    <ConceptChip key={i} term={concept.term} definition={concept.definition} />
                   ))}
                 </div>
               </div>
@@ -114,6 +104,7 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
                     className="aspect-video w-full rounded-xl"
                     src={`https://www.youtube.com/embed/${paragraph.videoUrl.split("v=")[1]?.split("&")[0]}`}
                     title={paragraph.title}
+                    loading="lazy"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
