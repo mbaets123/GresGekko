@@ -20,6 +20,12 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
 
   function handleSubmit() {
     if (!answer.trim()) return;
+    if (question.type === "open") {
+      // Open vragen worden niet automatisch beoordeeld
+      setIsCorrect(false);
+      setSubmitted(true);
+      return;
+    }
     const correct =
       answer.trim().toLowerCase() === question.answer.trim().toLowerCase();
     setIsCorrect(correct);
@@ -116,16 +122,29 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
         <div className="space-y-3">
           {question.type === "open" ? (
             <div className="rounded-xl bg-gres-blue/5 border border-gres-blue/15 p-4">
-              <p className="mb-1 text-xs font-bold uppercase tracking-wider text-gres-blue">
-                Jouw antwoord
-              </p>
-              <p className="text-sm text-foreground/80">{answer}</p>
-              <div className="mt-3 border-t border-gres-blue/10 pt-3">
-                <p className="mb-1 text-xs font-bold uppercase tracking-wider text-gres-blue">
-                  Voorbeeldantwoord
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-lg">📝</span>
+                <p className="text-sm font-bold text-gres-blue">
+                  Vergelijk jouw antwoord met het voorbeeldantwoord
                 </p>
-                <p className="text-sm text-foreground/80">{question.answer}</p>
               </div>
+              <div className="space-y-3">
+                <div className="rounded-lg bg-white dark:bg-gray-800 border border-gres-blue/10 p-3">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Jouw antwoord
+                  </p>
+                  <p className="text-sm text-foreground/80">{answer}</p>
+                </div>
+                <div className="rounded-lg bg-gres-yellow/10 border border-gres-yellow/20 p-3">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-gres-blue">
+                    Voorbeeldantwoord
+                  </p>
+                  <p className="text-sm text-foreground/80">{question.answer}</p>
+                </div>
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">
+                💡 Tip: controleer of jouw antwoord de belangrijkste punten bevat.
+              </p>
             </div>
           ) : (
             <div
