@@ -21,12 +21,12 @@ export function ParagraphSidebar({ chapter }: ParagraphSidebarProps) {
 
   return (
     <div className="md:sticky md:top-20 z-30">
-      {/* Collapsed: small vertical tab */}
+      {/* Collapsed: floating action button */}
       <button
         onClick={() => setOpen(!open)}
         className={cn(
-          "flex items-center gap-2 rounded-2xl bg-gres-blue px-3 py-3 shadow-lg transition-all hover:shadow-xl",
-          open ? "w-72" : "w-12 md:w-14"
+          "flex items-center gap-2 rounded-2xl bg-gres-blue shadow-lg transition-all hover:shadow-xl",
+          open ? "w-72 px-3 py-3" : "px-3 py-2.5 md:px-3 md:py-3"
         )}
       >
         <span
@@ -37,6 +37,11 @@ export function ParagraphSidebar({ chapter }: ParagraphSidebarProps) {
         >
           {open ? "✕" : "☰"}
         </span>
+        {!open && (
+          <span className="text-xs font-semibold text-white pr-1 md:hidden">
+            Paragrafen
+          </span>
+        )}
         {open && (
           <div className="min-w-0 flex-1 text-left">
             <p className="text-[10px] font-bold uppercase tracking-widest text-gres-yellow">

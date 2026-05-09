@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ParagraphProgress } from "@/components/ui/ParagraphProgress";
 import { getChapter } from "@/lib/data";
 
 interface ChapterPageProps {
@@ -90,6 +91,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                     >
                       {chapter.order}.{paragraph.order}
                     </div>
+                    <ParagraphProgress paragraphId={paragraph.id} />
                     {paragraph.isExtra && (
                       <span className="rounded-full bg-gres-blue/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gres-blue">
                         Extra

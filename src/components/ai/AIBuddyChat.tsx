@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +29,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
   });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -44,6 +46,16 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  function handleScroll() {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    setShowScrollBtn(scrollHeight - scrollTop - clientHeight > 60);
+  }
+
+  function scrollToBottom() {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }
 
   async function handleSend(directText?: string) {
     const text = (directText || input).trim();
@@ -163,7 +175,8 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
         </div>
       )}
       {/* Messages */}
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto p-4 space-y-3">
+      <div className="relative min-h-0 flex-1">
+      <div ref={scrollRef} onScroll={handleScroll} className="h-full overflow-y-auto p-4 space-y-3">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
             <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gres-yellow/20 to-green-400/10 shadow-md animate-pulse">
@@ -199,7 +212,27 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
                   : "bg-muted rounded-bl-md"
               )}
             >
-              {msg.content || (
+              {msg.content ? (
+                msg.role === "assistant" ? (
+                  <ReactMarkdown
+                    components={{
+                      p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                      ul: ({ children }) => <ul className="mb-2 ml-4 list-disc last:mb-0">{children}</ul>,
+                      ol: ({ children }) => <ol className="mb-2 ml-4 list-decimal last:mb-0">{children}</ol>,
+                      li: ({ children }) => <li className="mb-0.5">{children}</li>,
+                      strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                      h1: ({ children }) => <p className="mb-1 font-bold text-base">{children}</p>,
+                      h2: ({ children }) => <p className="mb-1 font-bold text-base">{children}</p>,
+                      h3: ({ children }) => <p className="mb-1 font-bold">{children}</p>,
+                      code: ({ children }) => <code className="rounded bg-black/10 px-1 py-0.5 text-xs">{children}</code>,
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                ) : (
+                  msg.content
+                )
+              ) : (
                 <span className="inline-flex gap-1 text-muted-foreground">
                   <span className="animate-bounce">·</span>
                   <span className="animate-bounce [animation-delay:0.1s]">·</span>
@@ -209,6 +242,16 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
             </div>
           </div>
         ))}
+      </div>
+      {/* Scroll-naar-beneden knop */}
+      {showScrollBtn && (
+        <button
+          onClick={scrollToBottom}
+          className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-gres-blue/80 px-3 py-1 text-xs text-white shadow-md transition hover:bg-gres-blue"
+        >
+          ↓ Nieuwste
+        </button>
+      )}
       </div>
 
       {/* Prompt bubbels */}

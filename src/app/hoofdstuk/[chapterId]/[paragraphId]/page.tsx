@@ -6,6 +6,7 @@ import { QuestionSection } from "@/components/questions/QuestionSection";
 import { AIBuddyChat } from "@/components/ai/AIBuddyChat";
 import { HighlightText } from "@/components/ui/highlight-text";
 import { ConceptChip } from "@/components/ui/ConceptChip";
+import { MarkVisited } from "@/components/ui/MarkVisited";
 import { getParagraph } from "@/lib/data";
 import { getQuestions } from "@/lib/questions";
 
@@ -23,6 +24,7 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <MarkVisited paragraphId={paragraphId} />
       <div className="flex gap-4">
         {/* Sidebar - collapsible on all screens */}
         <div className="fixed bottom-4 left-4 z-40 md:relative md:bottom-auto md:left-auto">

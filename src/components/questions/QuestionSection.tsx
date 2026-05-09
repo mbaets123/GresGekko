@@ -68,9 +68,9 @@ export function QuestionSection({ questions }: QuestionSectionProps) {
         </span>
       </div>
 
-      {/* Level filters */}
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {DIFFICULTY_LABELS.map(({ level, label, desc, color }) => {
+      {/* Level filter tabs */}
+      <div className="mb-6 flex flex-wrap gap-2">
+        {DIFFICULTY_LABELS.map(({ level, label, color }) => {
           const count = questionsPerLevel.find((q) => q.level === level)?.questions.length || 0;
           const isActive = activeLevel === level;
           return (
@@ -78,24 +78,25 @@ export function QuestionSection({ questions }: QuestionSectionProps) {
               key={level}
               onClick={() => setActiveLevel(isActive ? null : level)}
               className={cn(
-                "group relative overflow-hidden rounded-2xl border p-4 text-center transition-all",
+                "group relative overflow-hidden rounded-full border px-4 py-2 text-sm font-medium transition-all",
                 isActive
-                  ? "border-gres-blue shadow-md bg-gres-blue/5"
-                  : "bg-card hover:shadow-md",
+                  ? "border-gres-blue bg-gres-blue text-white shadow-md"
+                  : "bg-card hover:shadow-sm hover:border-gres-blue/30",
                 count === 0 && "opacity-40 cursor-not-allowed"
               )}
               disabled={count === 0}
+              title={`${label} — ${count} ${count === 1 ? "vraag" : "vragen"}`}
             >
-              <div className={`absolute top-0 left-0 h-1 w-full bg-gradient-to-r ${color}`} />
-              <div className="mb-1 text-lg text-gres-yellow">
+              <span className="text-xs mr-1">
                 {"★".repeat(level)}
-                <span className="text-gres-blue/15">{"★".repeat(4 - level)}</span>
-              </div>
-              <p className="text-sm font-bold text-foreground">{label}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{desc}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {count} {count === 1 ? "vraag" : "vragen"}
-              </p>
+              </span>
+              {label}
+              <span className={cn(
+                "ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+                isActive ? "bg-white/20" : "bg-muted"
+              )}>
+                {count}
+              </span>
             </button>
           );
         })}
@@ -108,9 +109,9 @@ export function QuestionSection({ questions }: QuestionSectionProps) {
         </p>
       )}
 
-      {/* Questions */}
+      {/* Questions with fade-in animation */}
       {filteredQuestions.length > 0 && (
-        <div className="space-y-4">
+        <div key={activeLevel} className="space-y-4 animate-fade-in">
           {filteredQuestions.map((q, i) => (
             <QuestionCard key={q.id} question={q} index={i} />
           ))}

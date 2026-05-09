@@ -190,8 +190,7 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
 
           <Button
             onClick={handleRetry}
-            variant="outline"
-            className="border-gres-blue/20 text-gres-blue hover:bg-gres-blue/5"
+            className="bg-gres-blue hover:bg-gres-blue-light text-white"
           >
             Opnieuw proberen
           </Button>
