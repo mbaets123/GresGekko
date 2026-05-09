@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ParagraphSidebar } from "@/components/paragraph/ParagraphSidebar";
 import { Separator } from "@/components/ui/separator";
@@ -179,6 +180,58 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
           <Separator className="bg-gres-blue/10" />
 
           <QuestionSection questions={questions} />
+
+          {/* Vorige / Volgende navigatie */}
+          {(() => {
+            const currentIndex = chapter.paragraphs.findIndex((p) => p.id === paragraph.id);
+            const prev = currentIndex > 0 ? chapter.paragraphs[currentIndex - 1] : null;
+            const next = currentIndex < chapter.paragraphs.length - 1 ? chapter.paragraphs[currentIndex + 1] : null;
+
+            return (
+              <div className="flex items-center gap-3 pt-4">
+                {prev ? (
+                  <Link
+                    href={`/hoofdstuk/${chapter.id}/${prev.id}`}
+                    className="flex-1 group rounded-2xl border border-gres-blue/15 bg-card p-4 transition-all hover:shadow-md hover:border-gres-blue/30"
+                  >
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      ← Vorige
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-gres-blue group-hover:text-gres-blue-light">
+                      {chapter.order}.{prev.order} {prev.title}
+                    </p>
+                  </Link>
+                ) : (
+                  <div className="flex-1" />
+                )}
+                {next ? (
+                  <Link
+                    href={`/hoofdstuk/${chapter.id}/${next.id}`}
+                    className="flex-1 group rounded-2xl border border-gres-yellow/25 bg-gres-yellow/5 p-4 text-right transition-all hover:shadow-md hover:border-gres-yellow/40"
+                  >
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Volgende →
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-gres-blue group-hover:text-gres-blue-light">
+                      {chapter.order}.{next.order} {next.title}
+                    </p>
+                  </Link>
+                ) : (
+                  <Link
+                    href={`/hoofdstuk/${chapter.id}`}
+                    className="flex-1 group rounded-2xl border border-green-200 bg-green-50 p-4 text-right transition-all hover:shadow-md hover:border-green-300"
+                  >
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-green-600">
+                      ✅ Hoofdstuk klaar!
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-green-700 group-hover:text-green-800">
+                      Terug naar overzicht
+                    </p>
+                  </Link>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
