@@ -1,4 +1,5 @@
 import { ChapterCard } from "@/components/chapter/ChapterCard";
+import { SearchBar } from "@/components/search/SearchBar";
 import { getChapters } from "@/lib/data";
 
 export default async function HomePage() {
@@ -24,6 +25,9 @@ export default async function HomePage() {
             van Joost, oefen met vragen en stel mij alles wat je wilt weten!
             Samen worden wij nog slimmer.
           </p>
+          <div className="mt-8">
+            <SearchBar chapters={chapters} />
+          </div>
         </div>
       </section>
 
