@@ -6,13 +6,12 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-gres-blue via-gres-blue to-gres-blue-light py-16 sm:py-20">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute left-10 top-10 text-8xl">🧬</div>
-          <div className="absolute right-20 top-16 text-7xl">🔬</div>
-          <div className="absolute left-1/3 bottom-8 text-6xl">🌱</div>
-          <div className="absolute right-10 bottom-12 text-8xl">🧠</div>
-        </div>
+      <section className="relative overflow-hidden py-16 sm:py-20">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/gresgekko-hero.png')" }}
+        />
+        <div className="absolute inset-0 bg-gres-blue/75" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-gres-yellow/20 px-4 py-1.5 text-sm font-medium text-gres-yellow backdrop-blur">
             🎓 Leerjaar 1 &middot; VMBO-KT
