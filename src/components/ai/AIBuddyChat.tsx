@@ -110,14 +110,14 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-gres-yellow/20 to-gres-blue/10">
-              <span className="text-xl">🦎</span>
+            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gres-yellow/20 to-green-400/10 shadow-md animate-pulse">
+              <span className="text-3xl">🦎</span>
             </div>
-            <p className="text-sm font-medium text-foreground/80">
-              Hoi! Ik ben de GresGekko
+            <p className="text-sm font-bold text-foreground/80">
+              Yo! Ik ben de GresGekko 🔥
             </p>
-            <p className="mt-1 text-xs text-muted-foreground max-w-[200px]">
-              Hulp nodig met deze paragraaf..?
+            <p className="mt-1 text-xs text-muted-foreground max-w-[220px]">
+              Stel me een vraag, of klik op een bubbel hieronder. Ik help je met deze les! 💯
             </p>
           </div>
         )}
@@ -126,19 +126,31 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
           <div
             key={i}
             className={cn(
-              "max-w-[90%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
-              msg.role === "user"
-                ? "ml-auto bg-gres-blue text-white rounded-br-md"
-                : "mr-auto bg-muted rounded-bl-md"
+              "flex gap-2",
+              msg.role === "user" ? "justify-end" : "justify-start"
             )}
           >
-            {msg.content || (
-              <span className="inline-flex gap-1 text-muted-foreground">
-                <span className="animate-bounce">·</span>
-                <span className="animate-bounce [animation-delay:0.1s]">·</span>
-                <span className="animate-bounce [animation-delay:0.2s]">·</span>
-              </span>
+            {msg.role === "assistant" && (
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gres-yellow/30 to-green-400/20 text-sm mt-0.5">
+                🦎
+              </div>
             )}
+            <div
+              className={cn(
+                "max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
+                msg.role === "user"
+                  ? "bg-gres-blue text-white rounded-br-md"
+                  : "bg-muted rounded-bl-md"
+              )}
+            >
+              {msg.content || (
+                <span className="inline-flex gap-1 text-muted-foreground">
+                  <span className="animate-bounce">·</span>
+                  <span className="animate-bounce [animation-delay:0.1s]">·</span>
+                  <span className="animate-bounce [animation-delay:0.2s]">·</span>
+                </span>
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -148,13 +160,13 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
         <div className="flex flex-wrap gap-1.5">
           {[
             { emoji: "💡", label: "Metafoor", color: "text-yellow-600", prompt: "Leg de lesstof uit met een metafoor die makkelijk te begrijpen is", tooltip: "Legt de stof uit met een vergelijking die je makkelijk onthoudt" },
-            { emoji: "📋", label: "Stappenplan", color: "text-gres-blue", prompt: "Geef me een stappenplan om deze lesstof te leren", tooltip: "Geeft je een duidelijk plan om de stof stap voor stap te leren" },
-            { emoji: "❓", label: "Waarom?", color: "text-red-500", prompt: "Waarom is deze lesstof belangrijk? Waar heb ik dit voor nodig?", tooltip: "Vertelt waarom je dit moet leren en waar je het tegenkomt" },
-            { emoji: "🧩", label: "Puzzelstukje", color: "text-green-600", prompt: "Hoe hangt deze lesstof samen met wat ik al weet?", tooltip: "Laat zien hoe deze les past bij wat je al hebt geleerd" },
+            { emoji: "📋", label: "Samenvatting", color: "text-gres-blue", prompt: "Geef me een korte samenvatting van deze paragraaf in bullet points", tooltip: "Geeft je een overzichtelijke samenvatting van de les" },
+            { emoji: "🧠", label: "Begrippen", color: "text-green-600", prompt: "Oefen met mij de kernbegrippen van deze paragraaf! Noem steeds één begrip en laat mij de definitie geven.", tooltip: "Oefent de begrippen met je zodat je ze onthoudt" },
+            { emoji: "🎲", label: "Quiz me", color: "text-purple-600", prompt: "Start een quiz over deze paragraaf! Stel me meerdere vragen één voor één en houd mijn score bij.", tooltip: "Start een quiz met meerdere vragen en houdt je score bij" },
             { emoji: "⚽", label: "Voetbal", color: "text-teal-600", prompt: "Leg de lesstof uit met een voorbeeld uit de sportwereld", tooltip: "Gebruikt een sportvoorbeeld om de stof uit te leggen" },
             { emoji: "😊", label: "Simpel", color: "text-orange-500", prompt: "Leg de lesstof zo simpel mogelijk uit alsof ik 8 jaar oud ben", tooltip: "Legt alles zo simpel mogelijk uit in makkelijke taal" },
-            { emoji: "🎲", label: "Quiz me", color: "text-purple-600", prompt: "Stel me een quizvraag over deze lesstof", tooltip: "Stelt je een quizvraag om te testen of je het snapt" },
-            { emoji: "🎓", label: "Examentip", color: "text-amber-700", prompt: "Geef me een tip voor het toets over deze lesstof", tooltip: "Geeft je een handige tip voor de toets" },
+            { emoji: "❓", label: "Waarom?", color: "text-red-500", prompt: "Waarom is deze lesstof belangrijk? Waar heb ik dit voor nodig?", tooltip: "Vertelt waarom je dit moet leren en waar je het tegenkomt" },
+            { emoji: "🎓", label: "Toets-tip", color: "text-amber-700", prompt: "Geef me een tip voor de toets over deze lesstof. Waar moet ik extra op letten?", tooltip: "Geeft je een handige tip voor de toets" },
           ].map((item) => (
             <button
               key={item.label}
