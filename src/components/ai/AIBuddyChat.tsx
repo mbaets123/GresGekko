@@ -156,8 +156,8 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
       </div>
 
       {/* Prompt bubbels */}
-      <div className="border-t border-gres-blue/10 px-3 pt-2 pb-1">
-        <div className="flex flex-wrap gap-1.5">
+      <div className="border-t border-gres-blue/10 px-2 sm:px-3 pt-2 pb-1 max-h-[100px] sm:max-h-none overflow-y-auto">
+        <div className="flex flex-wrap gap-1 sm:gap-1.5">
           {[
             { emoji: "💡", label: "Metafoor", color: "text-yellow-600", prompt: "Leg de lesstof uit met een metafoor die makkelijk te begrijpen is", tooltip: "Legt de stof uit met een vergelijking die je makkelijk onthoudt" },
             { emoji: "📋", label: "Samenvatting", color: "text-gres-blue", prompt: "Geef me een korte samenvatting van deze paragraaf in bullet points", tooltip: "Geeft je een overzichtelijke samenvatting van de les" },

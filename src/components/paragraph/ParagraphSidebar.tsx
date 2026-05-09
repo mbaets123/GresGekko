@@ -20,13 +20,13 @@ export function ParagraphSidebar({ chapter }: ParagraphSidebarProps) {
   );
 
   return (
-    <div className="sticky top-20 z-30 w-14 hover:w-14">
+    <div className="md:sticky md:top-20 z-30">
       {/* Collapsed: small vertical tab */}
       <button
         onClick={() => setOpen(!open)}
         className={cn(
-          "flex items-center gap-2 rounded-2xl bg-gres-blue px-3 py-3 shadow-md transition-all hover:shadow-lg",
-          open ? "w-72" : "w-14"
+          "flex items-center gap-2 rounded-2xl bg-gres-blue px-3 py-3 shadow-lg transition-all hover:shadow-xl",
+          open ? "w-72" : "w-12 md:w-14"
         )}
       >
         <span

@@ -22,8 +22,8 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="flex gap-4">
-        {/* Sidebar - left, collapsible */}
-        <div className="hidden md:block">
+        {/* Sidebar - collapsible on all screens */}
+        <div className="fixed bottom-4 left-4 z-40 md:relative md:bottom-auto md:left-auto">
           <ParagraphSidebar chapter={chapter} />
         </div>
 
@@ -98,7 +98,7 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
           </section>
 
           {/* Video + AI Buddy sectie — video 2/3, AI 1/3 */}
-          <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+          <section className="grid gap-4 sm:gap-6 lg:grid-cols-[2fr_1fr]">
             {/* Video - large */}
             <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm">
               <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
@@ -131,8 +131,8 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
               </div>
             </div>
 
-            {/* AI Buddy - small, tall */}
-            <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col h-[500px]">
+            {/* AI Buddy - responsive height */}
+            <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col h-[350px] sm:h-[400px] lg:h-[500px]">
               <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-4 py-3">
                 <span>🦎</span>
                 <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
