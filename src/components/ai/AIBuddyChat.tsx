@@ -189,23 +189,23 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
       </div>
 
       {/* Prompt bubbels */}
-      <div className="border-t border-gres-blue/10 px-2 sm:px-3 pt-2 pb-1 max-h-[100px] sm:max-h-none overflow-y-auto">
-        <div className="flex flex-wrap gap-1 sm:gap-1.5">
+      <div className="border-t border-gres-blue/10 px-2 pt-1.5 pb-1">
+        <div className="flex flex-wrap gap-1">
           {[
-            { emoji: "💡", label: "Metafoor", color: "text-yellow-600", prompt: "Leg de lesstof uit met een metafoor die makkelijk te begrijpen is", tooltip: "Legt de stof uit met een vergelijking die je makkelijk onthoudt" },
             { emoji: "📋", label: "Samenvatting", color: "text-gres-blue", prompt: "Geef me een korte samenvatting van deze paragraaf in bullet points", tooltip: "Geeft je een overzichtelijke samenvatting van de les" },
             { emoji: "🧠", label: "Begrippen", color: "text-green-600", prompt: "Oefen met mij de kernbegrippen van deze paragraaf! Noem steeds één begrip en laat mij de definitie geven.", tooltip: "Oefent de begrippen met je zodat je ze onthoudt" },
-            { emoji: "🎲", label: "Quiz me", color: "text-purple-600", prompt: "Start een quiz over deze paragraaf! Stel me meerdere vragen één voor één en houd mijn score bij.", tooltip: "Start een quiz met meerdere vragen en houdt je score bij" },
-            { emoji: "⚽", label: "Voetbal", color: "text-teal-600", prompt: "Leg de lesstof uit met een voorbeeld uit de sportwereld", tooltip: "Gebruikt een sportvoorbeeld om de stof uit te leggen" },
-            { emoji: "😊", label: "Simpel", color: "text-orange-500", prompt: "Leg de lesstof zo simpel mogelijk uit alsof ik 8 jaar oud ben", tooltip: "Legt alles zo simpel mogelijk uit in makkelijke taal" },
-            { emoji: "❓", label: "Waarom?", color: "text-red-500", prompt: "Waarom is deze lesstof belangrijk? Waar heb ik dit voor nodig?", tooltip: "Vertelt waarom je dit moet leren en waar je het tegenkomt" },
-            { emoji: "🎓", label: "Toets-tip", color: "text-amber-700", prompt: "Geef me een tip voor de toets over deze lesstof. Waar moet ik extra op letten?", tooltip: "Geeft je een handige tip voor de toets" },
+            { emoji: "🎲", label: "Quiz", color: "text-purple-600", prompt: "Start een quiz over deze paragraaf! Stel me meerdere vragen één voor één en houd mijn score bij.", tooltip: "Start een quiz met score" },
+            { emoji: "💡", label: "Metafoor", color: "text-yellow-600", prompt: "Leg de lesstof uit met een metafoor die makkelijk te begrijpen is", tooltip: "Vergelijking die je makkelijk onthoudt" },
+            { emoji: "😊", label: "Simpel", color: "text-orange-500", prompt: "Leg de lesstof zo simpel mogelijk uit alsof ik 8 jaar oud ben", tooltip: "Zo simpel mogelijk uitgelegd" },
+            { emoji: "⚽", label: "Sport", color: "text-teal-600", prompt: "Leg de lesstof uit met een voorbeeld uit de sportwereld", tooltip: "Sportvoorbeeld om het te snappen" },
+            { emoji: "❓", label: "Waarom?", color: "text-red-500", prompt: "Waarom is deze lesstof belangrijk? Waar heb ik dit voor nodig?", tooltip: "Waarom moet je dit leren?" },
+            { emoji: "🎓", label: "Toets", color: "text-amber-700", prompt: "Geef me een tip voor de toets over deze lesstof. Waar moet ik extra op letten?", tooltip: "Handige tip voor de toets" },
           ].map((item) => (
             <button
               key={item.label}
               onClick={() => handleSend(item.prompt)}
               disabled={isLoading}
-              className="group relative inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium transition hover:shadow-md hover:border-gray-300 disabled:opacity-50"
+              className="group relative inline-flex items-center gap-0.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-0.5 text-[10px] font-medium transition hover:shadow-md hover:border-gray-300 disabled:opacity-50"
             >
               <span>{item.emoji}</span>
               <span className={item.color}>{item.label}</span>
