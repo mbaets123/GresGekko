@@ -125,7 +125,7 @@ export default async function HomePage() {
                   href="https://www.youtube.com/channel/UCV-_BhPt2wrBQYzAowlRMCA"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border-2 border-red-200 bg-red-50 px-4 py-2 text-xs font-semibold text-red-600 transition-all hover:border-red-300 hover:shadow-sm"
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-green-700/30 bg-green-800/10 px-4 py-2 text-xs font-semibold text-green-800 transition-all hover:border-green-700/50 hover:shadow-sm"
                 >
                   ▶️ Joost op YouTube
                 </a>
