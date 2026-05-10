@@ -196,18 +196,34 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
             </span>
           )}
         </button>
-        {/* Progress bar — fills remaining width */}
-        <div className="ml-auto flex flex-1 items-center gap-2">
-          <div className="relative h-2 w-full overflow-hidden rounded-full bg-gres-blue/10">
-            <div
-              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-gres-blue to-gres-blue-light transition-all duration-500 ease-out"
-              style={{ width: `${questions.length > 0 ? (answeredIds.size / questions.length) * 100 : 0}%` }}
-            />
-          </div>
-          <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
-            {answeredIds.size}/{questions.length}
-          </span>
-        </div>
+        {/* Progress bar — fills remaining width, color changes with progress */}
+        {(() => {
+          const pct = questions.length > 0 ? answeredIds.size / questions.length : 0;
+          const gradient = pct === 0
+            ? "from-gray-300 to-gray-400"
+            : pct < 0.25
+              ? "from-rose-400 to-pink-500"
+              : pct < 0.5
+                ? "from-orange-400 to-amber-500"
+                : pct < 0.75
+                  ? "from-cyan-400 to-blue-500"
+                  : pct < 1
+                    ? "from-violet-400 to-purple-500"
+                    : "from-emerald-400 to-green-500";
+          return (
+            <div className="ml-auto flex flex-1 items-center gap-2">
+              <div className="relative h-2 w-full overflow-hidden rounded-full bg-gres-blue/10">
+                <div
+                  className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${gradient} transition-all duration-500 ease-out`}
+                  style={{ width: `${pct * 100}%` }}
+                />
+              </div>
+              <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
+                {answeredIds.size}/{questions.length}
+              </span>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Hint when no level selected and AI not open */}
