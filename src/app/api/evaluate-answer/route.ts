@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { supabase } from "@/lib/supabase";
 
 /* ---------- Rate limiter ---------- */
 const rateMap = new Map<string, { count: number; resetAt: number }>();
@@ -29,9 +30,38 @@ export async function POST(req: NextRequest) {
   const question = typeof body.question === "string" ? body.question : null;
   const correctAnswer = typeof body.correctAnswer === "string" ? body.correctAnswer : null;
   const studentAnswer = typeof body.studentAnswer === "string" ? body.studentAnswer : null;
+  const paragraphId = typeof body.paragraphId === "string" ? body.paragraphId : null;
 
   if (!question || !correctAnswer || !studentAnswer) {
     return Response.json({ error: "Missing data" }, { status: 400 });
+  }
+
+  // Fetch lesson context for better evaluation
+  let lessonContext = "";
+  if (paragraphId) {
+    const { data: paragraph } = await supabase
+      .from("paragraphs")
+      .select("title, transcript")
+      .eq("id", paragraphId)
+      .single();
+
+    const { data: concepts } = await supabase
+      .from("concepts")
+      .select("term, definition")
+      .eq("paragraph_id", paragraphId)
+      .order("order");
+
+    if (paragraph?.transcript) {
+      const conceptsText = (concepts || [])
+        .map((c) => c.definition ? `${c.term}: ${c.definition}` : c.term)
+        .join("; ");
+
+      lessonContext = `
+LESSTOF CONTEXT (gebruik dit om te beoordelen of het antwoord inhoudelijk klopt):
+Paragraaf: "${paragraph.title}"
+Kernbegrippen: ${conceptsText}
+Samenvatting lesstof: ${paragraph.transcript.slice(0, 1500)}`;
+    }
   }
 
   const systemPrompt = `Je bent een biologiedocent die het antwoord van een vmbo-havo leerling beoordeelt.
@@ -39,14 +69,16 @@ export async function POST(req: NextRequest) {
 VRAAG: "${question}"
 VOORBEELDANTWOORD: "${correctAnswer}"
 ANTWOORD VAN DE LEERLING: "${studentAnswer}"
+${lessonContext}
 
 Beoordeel het antwoord van de leerling. Geef je antwoord UITSLUITEND als JSON:
 {"score":"goed"|"deels"|"fout","feedback":"Persoonlijke feedback, max 2 zinnen. Wees bemoedigend en chill, gebruik af en toe een woord als 'bro' of 'nice' maar overdrijf niet.","tip":"Als het antwoord niet perfect is, geef een korte tip wat er mist of beter kan. Anders laat leeg."}
 
 Regels:
-- "goed" = alle belangrijke punten genoemd
-- "deels" = sommige punten goed, maar er mist iets
-- "fout" = het antwoord klopt niet of slaat nergens op
+- "goed" = alle belangrijke punten genoemd. Het antwoord hoeft NIET woordelijk hetzelfde te zijn als het voorbeeldantwoord — als de leerling hetzelfde bedoelt in eigen woorden is het ook goed.
+- "deels" = sommige punten goed, maar er mist iets belangrijks
+- "fout" = het antwoord klopt inhoudelijk niet of slaat nergens op
+- Gebruik de lesstof context om te controleren of het antwoord van de leerling klopt, ook als het anders verwoord is dan het voorbeeldantwoord
 - Wees eerlijk maar altijd bemoedigend
 - Feedback in het Nederlands met wat straattaal`;
 
