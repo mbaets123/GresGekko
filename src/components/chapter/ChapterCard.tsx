@@ -3,12 +3,12 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import type { Chapter } from "@/types";
 
 const chapterColors = [
-  { bg: "from-blue-500/10 to-cyan-500/10", border: "hover:border-blue-400/40", icon: "bg-blue-500/15" },
-  { bg: "from-orange-500/10 to-red-500/10", border: "hover:border-orange-400/40", icon: "bg-orange-500/15" },
-  { bg: "from-green-500/10 to-emerald-500/10", border: "hover:border-green-400/40", icon: "bg-green-500/15" },
-  { bg: "from-red-500/10 to-pink-500/10", border: "hover:border-red-400/40", icon: "bg-red-500/15" },
-  { bg: "from-purple-500/10 to-violet-500/10", border: "hover:border-purple-400/40", icon: "bg-purple-500/15" },
-  { bg: "from-indigo-500/10 to-blue-500/10", border: "hover:border-indigo-400/40", icon: "bg-indigo-500/15" },
+  { bg: "from-blue-500/10 to-cyan-500/10", border: "hover:border-blue-400/40", icon: "bg-blue-500/15", overlay: "bg-blue-800/60", overlayHover: "group-hover:bg-blue-800/50" },
+  { bg: "from-orange-500/10 to-red-500/10", border: "hover:border-orange-400/40", icon: "bg-orange-500/15", overlay: "bg-orange-800/60", overlayHover: "group-hover:bg-orange-800/50" },
+  { bg: "from-green-500/10 to-emerald-500/10", border: "hover:border-green-400/40", icon: "bg-green-500/15", overlay: "bg-green-800/60", overlayHover: "group-hover:bg-green-800/50" },
+  { bg: "from-red-500/10 to-pink-500/10", border: "hover:border-red-400/40", icon: "bg-red-500/15", overlay: "bg-red-800/60", overlayHover: "group-hover:bg-red-800/50" },
+  { bg: "from-purple-500/10 to-violet-500/10", border: "hover:border-purple-400/40", icon: "bg-purple-500/15", overlay: "bg-purple-800/60", overlayHover: "group-hover:bg-purple-800/50" },
+  { bg: "from-indigo-500/10 to-blue-500/10", border: "hover:border-indigo-400/40", icon: "bg-indigo-500/15", overlay: "bg-indigo-800/60", overlayHover: "group-hover:bg-indigo-800/50" },
 ];
 
 interface ChapterCardProps {
@@ -29,7 +29,7 @@ export function ChapterCard({ chapter }: ChapterCardProps) {
             className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-300 group-hover:scale-105"
             style={{ backgroundImage: `url('/chapters/${chapter.order}.jpg')` }}
           />
-          <div className="absolute inset-0 bg-gres-blue/60 transition-opacity duration-300 group-hover:bg-gres-blue/50" />
+          <div className={`absolute inset-0 ${colors.overlay} ${colors.overlayHover} transition-all duration-300`} />
           <div className="relative flex h-full items-end p-4">
             <div
               className={`flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 text-2xl shadow-sm backdrop-blur-sm transition-transform duration-300 group-hover:scale-110`}
