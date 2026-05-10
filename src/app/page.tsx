@@ -99,14 +99,7 @@ export default async function HomePage() {
                   Alle uitlegvideo&apos;s komen van het YouTube-kanaal van{" "}
                   <strong className="text-foreground">Joost</strong>. Samen met het
                   open leermateriaal van{" "}
-                  <a
-                    href="https://www.vo-content.nl/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-gres-blue underline decoration-gres-yellow/40 underline-offset-2 hover:decoration-gres-yellow"
-                  >
-                    VO-content
-                  </a>{" "}
+                  <strong className="text-foreground">VO-content</strong>{" "}
                   vormt dit de basis van elke les. Goede uitleg + AI-hulp = ultieme combo! 🔥
                 </p>
               </div>
