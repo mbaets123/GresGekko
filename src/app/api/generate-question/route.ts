@@ -34,6 +34,9 @@ export async function POST(req: NextRequest) {
     ? body.difficulty : null;
   const validTypes = ["multiple-choice", "open", "fill-in"];
   const questionType = validTypes.includes(body.questionType) ? body.questionType : "multiple-choice";
+  const previousQuestions: string[] = Array.isArray(body.previousQuestions)
+    ? body.previousQuestions.slice(-10)
+    : [];
 
   if (!paragraphId || !difficulty) {
     return Response.json({ error: "Missing data" }, { status: 400 });
@@ -98,11 +101,12 @@ ${paragraph.transcript.slice(0, 3000)}
 REGELS:
 - De vraag MOET gebaseerd zijn op bovenstaande lesstof
 - Maak een vraag van type "${questionType}"
+- Bedenk een NIEUW scenario of context voor de vraag, gebruik voorbeelden uit het dagelijks leven van een tiener${previousQuestions.length > 0 ? `\n- Deze vragen zijn al gesteld, stel GEEN vergelijkbare vraag. Kies een ANDER onderwerp/begrip:\n${previousQuestions.map((q) => `  * "${q}"`).join("\n")}` : ""}
 - Bij multiple-choice: geef precies 4 KORTE opties (max 15 woorden per optie), waarvan 1 correct. Maak de foute opties geloofwaardig. Gebruik GEEN "A.", "B." etc. voor de opties. Het "answer" veld moet EXACT overeenkomen met een van de opties.
 - Bij fill-in: maak een zin met ... (drie puntjes) waar het antwoord moet komen. Het antwoord moet 1-3 woorden zijn.
 - Bij open: stel een vraag waar de leerling in eigen woorden moet antwoorden. Geef een voorbeeldantwoord in het "answer" veld.
 - De uitleg moet kort, helder en leerzaam zijn (2-3 zinnen max)
-- De feedback moet persoonlijk en bemoedigend zijn, in de stijl van een chille docent
+- De feedback moet persoonlijk en bemoedigend zijn, chill maar niet overdreven met straattaal. Max 1 straattaalwoord per feedback.
 
 ANTWOORD UITSLUITEND in dit exacte JSON format, zonder markdown codeblocks, op 1 regel:
 

@@ -17,6 +17,12 @@ interface AIQuestion {
   feedbackWrong?: string;
 }
 
+interface AIEvaluation {
+  score: "goed" | "deels" | "fout";
+  feedback: string;
+  tip: string;
+}
+
 type Phase = "idle" | "picking" | "picking-type" | "loading" | "answering" | "feedback";
 type QuestionType = "multiple-choice" | "open" | "fill-in" | "random";
 
@@ -62,6 +68,9 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
   const [isCorrect, setIsCorrect] = useState(false);
   const [error, setError] = useState("");
   const [count, setCount] = useState(0);
+  const [previousQuestions, setPreviousQuestions] = useState<string[]>([]);
+  const [evaluation, setEvaluation] = useState<AIEvaluation | null>(null);
+  const [evaluating, setEvaluating] = useState(false);
 
   const startPicking = useCallback(() => {
     setIntro(randomIntro());
@@ -88,7 +97,7 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
       const res = await fetch("/api/generate-question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paragraphId, difficulty: selectedLevel, questionType: resolvedType }),
+        body: JSON.stringify({ paragraphId, difficulty: selectedLevel, questionType: resolvedType, previousQuestions }),
       });
 
       if (!res.ok) {
@@ -100,6 +109,7 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
 
       const data = await res.json();
       setQuestion(data.question);
+      setPreviousQuestions((prev) => [...prev, data.question.question]);
       setPhase("answering");
     } catch {
       setError("Verbindingsfout. Probeer het opnieuw.");
@@ -116,12 +126,30 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
       .replace(/[.,!?;:'"()-]/g, "");
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!answer.trim() || !question) return;
     if (question.type === "open") {
-      setIsCorrect(false);
       setCount((c) => c + 1);
       setPhase("feedback");
+      setEvaluating(true);
+      setEvaluation(null);
+      try {
+        const res = await fetch("/api/evaluate-answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question: question.question,
+            correctAnswer: question.answer,
+            studentAnswer: answer,
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setEvaluation(data.evaluation);
+          setIsCorrect(data.evaluation.score === "goed");
+        }
+      } catch { /* evaluation failed silently, show compare view */ }
+      setEvaluating(false);
       return;
     }
     const correct = normalize(answer) === normalize(question.answer);
@@ -131,6 +159,8 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
   }
 
   function handleReset() {
+    setEvaluation(null);
+    setEvaluating(false);
     setPhase("idle");
     setQuestion(null);
     setAnswer("");
@@ -387,14 +417,24 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
             <div className={cn(
               "rounded-2xl rounded-tl-sm border px-4 py-2.5 shadow-sm",
               question.type === "open"
-                ? "bg-gres-blue/5 border-gres-blue/15"
+                ? evaluation
+                  ? evaluation.score === "goed"
+                    ? "bg-green-50 dark:bg-green-950/30 border-green-200"
+                    : evaluation.score === "deels"
+                      ? "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200"
+                      : "bg-orange-50 dark:bg-orange-950/30 border-orange-200"
+                  : "bg-gres-blue/5 border-gres-blue/15"
                 : isCorrect
                   ? "bg-green-50 dark:bg-green-950/30 border-green-200"
                   : "bg-orange-50 dark:bg-orange-950/30 border-orange-200"
             )}>
               <p className="text-sm font-medium text-foreground">
                 {question.type === "open"
-                  ? "Goed bezig! Vergelijk je antwoord met het voorbeeld 📝"
+                  ? evaluating
+                    ? "Even kijken naar je antwoord... 🧠"
+                    : evaluation
+                      ? evaluation.feedback
+                      : "Goed bezig! Vergelijk je antwoord met het voorbeeld 📝"
                   : isCorrect
                     ? (question.feedbackCorrect || "Goed zo bro! 🔥✅")
                     : (question.feedbackWrong || "Bijna! Maar geen stress 💪")}
@@ -408,32 +448,49 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
               {question.question}
             </p>
 
-            {/* Open question: compare answers */}
+            {/* Open question: AI evaluation */}
             {question.type === "open" ? (
-              <div className="rounded-xl bg-gres-blue/5 border border-gres-blue/15 p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-lg">📝</span>
-                  <p className="text-sm font-bold text-gres-blue">
-                    Vergelijk jouw antwoord met het voorbeeldantwoord
+              <div className="space-y-3">
+                {/* Score indicator */}
+                {evaluating ? (
+                  <div className="rounded-xl bg-gres-blue/5 border border-gres-blue/15 p-4 flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gres-blue text-sm animate-bounce">🦎</span>
+                    <p className="text-sm text-muted-foreground">GresGekko beoordeelt je antwoord...</p>
+                  </div>
+                ) : evaluation ? (
+                  <div className={cn(
+                    "rounded-xl p-4 border",
+                    evaluation.score === "goed" && "bg-green-100/80 border-green-200",
+                    evaluation.score === "deels" && "bg-yellow-100/80 border-yellow-200",
+                    evaluation.score === "fout" && "bg-orange-100/80 border-orange-200",
+                  )}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">
+                        {evaluation.score === "goed" ? "✅" : evaluation.score === "deels" ? "🟡" : "❌"}
+                      </span>
+                      <p className="text-sm font-bold">
+                        {evaluation.score === "goed" ? "Helemaal goed!" : evaluation.score === "deels" ? "Gedeeltelijk goed" : "Nog niet helemaal"}
+                      </p>
+                    </div>
+                    {evaluation.tip && (
+                      <p className="mt-1 text-sm text-foreground/70">💡 {evaluation.tip}</p>
+                    )}
+                  </div>
+                ) : null}
+
+                {/* Student answer vs example */}
+                <div className="rounded-lg bg-white dark:bg-gray-800 border border-gres-blue/10 p-3">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Jouw antwoord
                   </p>
+                  <p className="text-sm text-foreground/80">{answer}</p>
                 </div>
-                <div className="space-y-3">
-                  <div className="rounded-lg bg-white dark:bg-gray-800 border border-gres-blue/10 p-3">
-                    <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Jouw antwoord
-                    </p>
-                    <p className="text-sm text-foreground/80">{answer}</p>
-                  </div>
-                  <div className="rounded-lg bg-gres-yellow/10 border border-gres-yellow/20 p-3">
-                    <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-gres-blue">
-                      Voorbeeldantwoord
-                    </p>
-                    <p className="text-sm text-foreground/80">{question.answer}</p>
-                  </div>
+                <div className="rounded-lg bg-gres-yellow/10 border border-gres-yellow/20 p-3">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-gres-blue">
+                    Voorbeeldantwoord
+                  </p>
+                  <p className="text-sm text-foreground/80">{question.answer}</p>
                 </div>
-                <p className="mt-3 text-xs text-muted-foreground">
-                  💡 Tip: controleer of jouw antwoord de belangrijkste punten bevat.
-                </p>
               </div>
             ) : (
               /* MC / fill-in: correct/incorrect indicator */
