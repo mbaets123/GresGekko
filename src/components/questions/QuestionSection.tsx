@@ -162,21 +162,8 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
         <h3 className="text-lg font-bold text-foreground">Oefenvragen</h3>
       </div>
 
-      {/* Progress bar */}
-      <div className="mb-5 flex items-center gap-3">
-        <div className="relative h-3 flex-1 overflow-hidden rounded-full bg-gres-blue/10">
-          <div
-            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-gres-blue to-gres-blue-light transition-all duration-500 ease-out"
-            style={{ width: `${questions.length > 0 ? (answeredIds.size / questions.length) * 100 : 0}%` }}
-          />
-        </div>
-        <span className="text-sm font-semibold text-foreground whitespace-nowrap">
-          {answeredIds.size}/{questions.length} vragen
-        </span>
-      </div>
-
-      {/* Level filter tabs + AI button */}
-      <div className="mb-6 flex flex-wrap gap-2">
+      {/* Level filter tabs + AI button + progress */}
+      <div className="mb-6 flex flex-wrap items-center gap-2">
         {DIFFICULTY_LABELS.map(({ level, label, desc, color }) => {
           const count = questionsPerLevel.find((q) => q.level === level)?.questions.length || 0;
           const isActive = activeLevel === level;
@@ -193,7 +180,7 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
             />
           );
         })}
-        {/* AI generate button — same size as level buttons */}
+        {/* AI generate button */}
         <button
           onClick={() => setAiOpen(true)}
           className={cn(
@@ -209,6 +196,18 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
             </span>
           )}
         </button>
+        {/* Progress bar — compact, right-aligned */}
+        <div className="ml-auto flex items-center gap-2">
+          <div className="relative h-2 w-24 overflow-hidden rounded-full bg-gres-blue/10">
+            <div
+              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-gres-blue to-gres-blue-light transition-all duration-500 ease-out"
+              style={{ width: `${questions.length > 0 ? (answeredIds.size / questions.length) * 100 : 0}%` }}
+            />
+          </div>
+          <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
+            {answeredIds.size}/{questions.length}
+          </span>
+        </div>
       </div>
 
       {/* Hint when no level selected and AI not open */}
