@@ -19,7 +19,12 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
   return (
     <>
       {/* Chapter hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-gres-blue via-gres-blue to-gres-blue-light py-12">
+      <section className="relative overflow-hidden py-12">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url('/chapters/${chapter.order}.jpg')` }}
+        />
+        <div className="absolute inset-0 bg-gres-blue/75" />
         <div className="absolute right-10 top-6 text-[120px] opacity-10 select-none">
           {chapter.icon}
         </div>
