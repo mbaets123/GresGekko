@@ -26,14 +26,14 @@ interface AIEvaluation {
 type Phase = "idle" | "picking" | "loading" | "answering" | "feedback";
 type QuestionType = "multiple-choice" | "open" | "fill-in" | "random";
 
-const GEKKO_INTROS = [
-  "Yo, jij hebt er zin in! 🦎🔥",
+const BUFFEL_INTROS = [
+  "Yo, jij hebt er zin in! 🦬🔥",
   "Lekker bezig bro! 💯",
   "Sheesh, dooroefenen? Respect! 🔥",
-  "Ayo, die motivatie is fire! 🦎",
+  "Ayo, die motivatie is fire! 🦬",
   "No cap, jij bent een W-leerling! 💪",
   "Fr fr, lekker doorknallen! 🧠",
-  "Die grindset bro, love it! 🦎✅",
+  "Die grindset bro, love it! 🦬✅",
   "Jij stopt niet hè? Goated! 🔥",
 ];
 
@@ -52,7 +52,7 @@ const TYPE_OPTIONS: { type: QuestionType; label: string; emoji: string }[] = [
 ];
 
 function randomIntro(): string {
-  return GEKKO_INTROS[Math.floor(Math.random() * GEKKO_INTROS.length)];
+  return BUFFEL_INTROS[Math.floor(Math.random() * BUFFEL_INTROS.length)];
 }
 
 interface AIQuestionGeneratorProps {
@@ -222,12 +222,12 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
           onClick={startPicking}
           className="group flex items-center gap-2 rounded-full border-2 border-dashed border-gres-yellow/40 bg-gres-yellow/10 px-5 py-3 text-sm font-semibold text-gres-blue transition-all hover:border-gres-yellow hover:bg-gres-yellow/20 hover:shadow-md"
         >
-          <span className="text-lg transition-transform group-hover:scale-110">🦎</span>
+          <span className="text-lg transition-transform group-hover:scale-110">🦬</span>
           Genereer een nieuwe vraag
         </button>
         {count > 0 && (
           <span className="text-xs text-muted-foreground">
-            🦎 {count} extra {count === 1 ? "vraag" : "vragen"} geoefend!
+            🦬 {count} extra {count === 1 ? "vraag" : "vragen"} geoefend!
           </span>
         )}
       </div>
@@ -239,10 +239,10 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
     return (
       <div className="mt-6 animate-fade-in">
         <div className="rounded-2xl border-2 border-gres-yellow/30 bg-gradient-to-br from-gres-yellow/10 to-gres-blue/5 p-5">
-          {/* GresGekko speech bubble */}
+          {/* Buffy speech bubble */}
           <div className="mb-4 flex items-start gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gres-blue text-lg shadow-md">
-              🦎
+              🦬
             </span>
             <div className="rounded-2xl rounded-tl-sm bg-white dark:bg-gray-800 border border-gres-blue/10 px-4 py-2.5 shadow-sm">
               <p className="text-sm font-medium text-foreground">
@@ -311,7 +311,7 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
             onClick={() => generateQuestion(selectedType)}
             className="w-full bg-gres-blue hover:bg-gres-blue-light text-white"
           >
-            🦎 Genereer vraag
+            🦬 Genereer vraag
           </Button>
 
           <button
@@ -332,11 +332,11 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
         <div className="rounded-2xl border-2 border-gres-yellow/30 bg-gradient-to-br from-gres-yellow/10 to-gres-blue/5 p-6">
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gres-blue text-lg shadow-md animate-bounce">
-              🦎
+              🦬
             </span>
             <div>
               <p className="text-sm font-medium text-foreground">
-                GresGekko denkt na over een goede vraag...
+                Buffy denkt na over een goede vraag...
               </p>
               <div className="mt-1 flex gap-1">
                 <span className="h-2 w-2 rounded-full bg-gres-yellow animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -355,10 +355,10 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
     return (
       <div className="mt-6 animate-fade-in">
         <div className="rounded-2xl border-2 border-gres-yellow/30 bg-gradient-to-br from-gres-yellow/10 to-gres-blue/5 p-5">
-          {/* GresGekko intro */}
+          {/* Buffy intro */}
           <div className="mb-4 flex items-start gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gres-blue text-lg shadow-md">
-              🦎
+              🦬
             </span>
             <div className="rounded-2xl rounded-tl-sm bg-white dark:bg-gray-800 border border-gres-blue/10 px-4 py-2.5 shadow-sm">
               <p className="text-sm font-medium text-foreground">
@@ -449,10 +449,10 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
     return (
       <div className="mt-6 animate-fade-in">
         <div className="rounded-2xl border-2 border-gres-yellow/30 bg-gradient-to-br from-gres-yellow/10 to-gres-blue/5 p-5">
-          {/* GresGekko feedback */}
+          {/* Buffy feedback */}
           <div className="mb-4 flex items-start gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gres-blue text-lg shadow-md">
-              🦎
+              🦬
             </span>
             <div className={cn(
               "rounded-2xl rounded-tl-sm border px-4 py-2.5 shadow-sm",
@@ -564,7 +564,7 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
                 onClick={startPicking}
                 className="bg-gres-blue hover:bg-gres-blue-light text-white"
               >
-                🦎 Nog een vraag!
+                🦬 Nog een vraag!
               </Button>
               <Button
                 onClick={handleReset}
@@ -579,7 +579,7 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
           {/* Counter */}
           {count > 0 && (
             <p className="mt-3 text-center text-xs text-muted-foreground">
-              🦎 {count} extra {count === 1 ? "vraag" : "vragen"} geoefend!
+              🦬 {count} extra {count === 1 ? "vraag" : "vragen"} geoefend!
             </p>
           )}
         </div>

@@ -128,9 +128,9 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
             {/* AI Buddy - responsive height */}
             <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col h-[350px] sm:h-[400px] lg:h-[500px]">
               <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-4 py-3">
-                <span>🦎</span>
+                <span>🦬</span>
                 <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                  GresGekko
+                  Buffy
                 </h3>
                 <span className="ml-auto rounded-full bg-gres-yellow/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gres-blue">
                   Beta

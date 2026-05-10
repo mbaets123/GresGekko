@@ -22,7 +22,7 @@ export function Header() {
           />
           <div className="flex flex-col">
             <span className="font-heading text-base leading-tight text-gres-blue tracking-wide">
-              Biologie met GresGekko
+              Biologie met Buffy
             </span>
             <span className="text-[10px] font-medium uppercase tracking-widest text-gres-yellow">
               Leerjaar 1 vmbo - havo

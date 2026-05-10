@@ -16,7 +16,7 @@ interface AIBuddyChatProps {
 }
 
 export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
-  const storageKey = `gresgekko-chat-${paragraphId}`;
+  const storageKey = `biobuffel-chat-${paragraphId}`;
 
   const [messages, setMessages] = useState<Message[]>(() => {
     if (typeof window === "undefined") return [];
@@ -180,10 +180,10 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
             <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gres-yellow/20 to-green-400/10 shadow-md animate-pulse">
-              <span className="text-3xl">🦎</span>
+              <span className="text-3xl">🦬</span>
             </div>
             <p className="text-sm font-bold text-foreground/80">
-              Yo! Ik ben de GresGekko 🔥
+              Yo! Ik ben Buffy 🔥
             </p>
             <p className="mt-1 text-xs text-muted-foreground max-w-[220px]">
               Stel me een vraag, of klik op een bubbel hieronder. Ik help je met deze les! 💯
@@ -201,7 +201,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
           >
             {msg.role === "assistant" && (
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gres-yellow/30 to-green-400/20 text-sm mt-0.5">
-                🦎
+                🦬
               </div>
             )}
             <div

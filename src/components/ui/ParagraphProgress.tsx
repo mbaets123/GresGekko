@@ -11,7 +11,7 @@ export function ParagraphProgress({ paragraphId }: ParagraphProgressProps) {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("gresgekko-progress");
+      const raw = localStorage.getItem("biobuffel-progress");
       if (raw) {
         const progress: string[] = JSON.parse(raw);
         setDone(progress.includes(paragraphId));

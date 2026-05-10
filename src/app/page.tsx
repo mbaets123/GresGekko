@@ -10,7 +10,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden py-16 sm:py-20">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/gresgekko-hero.png')" }}
+          style={{ backgroundImage: "url('/Gresbuffy.jpg')" }}
         />
         <div className="absolute inset-0 bg-gres-blue/75" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6">
@@ -18,10 +18,10 @@ export default async function HomePage() {
             🎓 Leerjaar 1 &middot; vmbo - havo
           </div>
           <h1 className="font-heading text-4xl tracking-wide text-white sm:text-5xl lg:text-6xl">
-            Biologie met GresGekko 🦎
+            Biologie met Buffy 🦬
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-lg text-white/70">
-            Fakka! Ik ben GresGekko, jouw AI-bio-hulpje. Bekijk de video&apos;s
+            Yo! Ik ben Buffy, jouw AI-bio-hulpje. Bekijk de video&apos;s
             van Joost, oefen met vragen en stel mij alles wat je wilt weten!
             Samen worden wij nog slimmer.
           </p>
