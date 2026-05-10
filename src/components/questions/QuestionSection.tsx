@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { QuestionCard } from "./QuestionCard";
 import { AIQuestionGenerator } from "./AIQuestionGenerator";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,82 @@ const DIFFICULTY_LABELS = [
   { level: 3, label: "Nieuwe situaties", desc: "Onbekende contexten", color: "from-orange-400 to-amber-500" },
   { level: 4, label: "Inzicht", desc: "Verbanden leggen", color: "from-purple-400 to-violet-500" },
 ];
+
+/* ---------- Level button with balloon tooltip ---------- */
+function LevelButton({
+  level, label, desc, count, isActive, onClick, disabled,
+}: {
+  level: number; label: string; desc: string; count: number;
+  isActive: boolean; onClick: () => void; disabled: boolean;
+}) {
+  const [tipOpen, setTipOpen] = useState(false);
+  const [tipVisible, setTipVisible] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
+  const openRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    function onTouch() { setIsTouch(true); window.removeEventListener("touchstart", onTouch); }
+    window.addEventListener("touchstart", onTouch, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onTouch);
+      if (openRef.current) clearTimeout(openRef.current);
+      if (closeRef.current) clearTimeout(closeRef.current);
+    };
+  }, []);
+
+  const enter = useCallback(() => {
+    if (isTouch) return;
+    if (closeRef.current) clearTimeout(closeRef.current);
+    openRef.current = setTimeout(() => {
+      setTipOpen(true);
+      requestAnimationFrame(() => setTipVisible(true));
+    }, 120);
+  }, [isTouch]);
+
+  const leave = useCallback(() => {
+    if (isTouch) return;
+    if (openRef.current) clearTimeout(openRef.current);
+    setTipVisible(false);
+    closeRef.current = setTimeout(() => setTipOpen(false), 100);
+  }, [isTouch]);
+
+  return (
+    <div className="relative" onMouseEnter={enter} onMouseLeave={leave}>
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        className={cn(
+          "group relative overflow-hidden rounded-full border px-4 py-2 text-sm font-medium transition-all",
+          isActive
+            ? "border-gres-blue bg-gres-blue text-white shadow-md"
+            : "bg-card hover:shadow-sm hover:border-gres-blue/30",
+          disabled && "opacity-40 cursor-not-allowed"
+        )}
+      >
+        <span className="text-xs mr-1">{"★".repeat(level)}</span>
+        {label}
+        <span className={cn(
+          "ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+          isActive ? "bg-white/20" : "bg-muted"
+        )}>
+          {count}
+        </span>
+      </button>
+      {tipOpen && (
+        <span
+          className={cn(
+            "absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-xl bg-gres-blue px-3 py-2 text-xs font-normal text-white shadow-lg text-center transition-all duration-150 pointer-events-none",
+            tipVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+          )}
+        >
+          {desc} — {count} {count === 1 ? "vraag" : "vragen"}
+          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gres-blue" />
+        </span>
+      )}
+    </div>
+  );
+}
 
 interface QuestionSectionProps {
   questions: Question[];
@@ -73,33 +149,20 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
 
       {/* Level filter tabs */}
       <div className="mb-6 flex flex-wrap gap-2">
-        {DIFFICULTY_LABELS.map(({ level, label, color }) => {
+        {DIFFICULTY_LABELS.map(({ level, label, desc, color }) => {
           const count = questionsPerLevel.find((q) => q.level === level)?.questions.length || 0;
           const isActive = activeLevel === level;
           return (
-            <button
+            <LevelButton
               key={level}
+              level={level}
+              label={label}
+              desc={desc}
+              count={count}
+              isActive={isActive}
               onClick={() => setActiveLevel(isActive ? null : level)}
-              className={cn(
-                "group relative overflow-hidden rounded-full border px-4 py-2 text-sm font-medium transition-all",
-                isActive
-                  ? "border-gres-blue bg-gres-blue text-white shadow-md"
-                  : "bg-card hover:shadow-sm hover:border-gres-blue/30",
-                count === 0 && "opacity-40 cursor-not-allowed"
-              )}
               disabled={count === 0}
-            >
-              <span className="text-xs mr-1">
-                {"★".repeat(level)}
-              </span>
-              {label}
-              <span className={cn(
-                "ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold",
-                isActive ? "bg-white/20" : "bg-muted"
-              )}>
-                {count}
-              </span>
-            </button>
+            />
           );
         })}
       </div>
