@@ -17,7 +17,7 @@ export default async function HomePage() {
           <h1 className="font-heading text-4xl tracking-wide text-white sm:text-5xl lg:text-6xl">
             Fakka, ik ben Buffy 🦬
           </h1>
-          <p className="mx-auto mt-4 max-w-lg text-lg text-white/70">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/70">
             Jouw ultieme biologie maatje. Wil je video&apos;s kijken, vragen
             oefenen of gewoon even vragen wat je niet snapt? Ik ben er voor je 💪
           </p>
