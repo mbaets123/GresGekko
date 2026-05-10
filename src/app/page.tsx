@@ -25,11 +25,13 @@ export default async function HomePage() {
             van Joost, oefen met vragen en stel mij alles wat je wilt weten!
             Samen worden wij nog slimmer.
           </p>
-          <div className="mt-8">
-            <SearchBar chapters={chapters} />
-          </div>
         </div>
       </section>
+
+      {/* Search bar — outside hero to prevent overflow clipping */}
+      <div className="relative z-20 mx-auto -mt-6 max-w-7xl px-4 sm:px-6">
+        <SearchBar chapters={chapters} />
+      </div>
 
       {/* Chapter grid */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
