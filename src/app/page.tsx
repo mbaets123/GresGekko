@@ -18,12 +18,11 @@ export default async function HomePage() {
             🎓 Leerjaar 1 &middot; vmbo - havo
           </div>
           <h1 className="font-heading text-4xl tracking-wide text-white sm:text-5xl lg:text-6xl">
-            Biologie met Buffy 🦬
+            Fakka, ik ben Buffy 🦬
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-lg text-white/70">
-            Yo! Ik ben Buffy — de buffel die biologie voor je kraak.
-            Video&apos;s kijken, vragen oefenen of gewoon even vragen wat
-            je niet snapt? Ik got you. 💪
+            Jouw ultieme biologie maatje. Wil je video&apos;s kijken, vragen
+            oefenen of gewoon even vragen wat je niet snapt? Ik ben er voor je 💪
           </p>
         </div>
       </section>
