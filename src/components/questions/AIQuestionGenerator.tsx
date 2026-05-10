@@ -23,7 +23,7 @@ interface AIEvaluation {
   tip: string;
 }
 
-type Phase = "idle" | "picking" | "picking-type" | "loading" | "answering" | "feedback";
+type Phase = "idle" | "picking" | "loading" | "answering" | "feedback";
 type QuestionType = "multiple-choice" | "open" | "fill-in" | "random";
 
 const GEKKO_INTROS = [
@@ -72,16 +72,13 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
   const [evaluation, setEvaluation] = useState<AIEvaluation | null>(null);
   const [evaluating, setEvaluating] = useState(false);
 
+  const [selectedType, setSelectedType] = useState<QuestionType>("multiple-choice");
+
   const startPicking = useCallback(() => {
     setIntro(randomIntro());
     setPhase("picking");
     setError("");
   }, []);
-
-  function handleLevelPick(level: number) {
-    setSelectedLevel(level);
-    setPhase("picking-type");
-  }
 
   async function generateQuestion(questionType: QuestionType) {
     setPhase("loading");
@@ -187,7 +184,7 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
     );
   }
 
-  // Phase: picking — choose difficulty
+  // Phase: picking — choose difficulty + type in one screen
   if (phase === "picking") {
     return (
       <div className="mt-6 animate-fade-in">
@@ -202,7 +199,7 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
                 {intro}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Op welk niveau wil je dooroefenen?
+                Kies je niveau en vraagtype, en go!
               </p>
             </div>
           </div>
@@ -211,74 +208,67 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
             <p className="mb-3 text-center text-xs text-red-500">{error}</p>
           )}
 
-          {/* Level buttons */}
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {LEVEL_INFO.map(({ level, label, emoji }) => (
-              <button
-                key={level}
-                onClick={() => handleLevelPick(level)}
-                className="group rounded-xl border bg-card p-3 text-center transition-all hover:border-gres-blue/30 hover:shadow-md active:scale-95"
-              >
-                <span className="block text-base text-gres-yellow">{emoji}</span>
-                <span className="mt-1 block text-xs font-semibold text-foreground">{label}</span>
-              </button>
-            ))}
+          {/* Difficulty level */}
+          <div className="mb-4">
+            <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Moeilijkheidsgraad
+            </p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {LEVEL_INFO.map(({ level, label, emoji }) => (
+                <button
+                  key={level}
+                  onClick={() => setSelectedLevel(level)}
+                  className={cn(
+                    "group rounded-xl border p-3 text-center transition-all active:scale-95",
+                    selectedLevel === level
+                      ? "border-gres-blue bg-gres-blue/10 shadow-md ring-2 ring-gres-blue/20"
+                      : "bg-card hover:border-gres-blue/30 hover:shadow-sm"
+                  )}
+                >
+                  <span className="block text-base text-gres-yellow">{emoji}</span>
+                  <span className="mt-1 block text-xs font-semibold text-foreground">{label}</span>
+                </button>
+              ))}
+            </div>
           </div>
+
+          {/* Question type */}
+          <div className="mb-4">
+            <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Type vraag
+            </p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {TYPE_OPTIONS.map(({ type, label, emoji }) => (
+                <button
+                  key={type}
+                  onClick={() => setSelectedType(type)}
+                  className={cn(
+                    "group rounded-xl border p-3 text-center transition-all active:scale-95",
+                    selectedType === type
+                      ? "border-gres-blue bg-gres-blue/10 shadow-md ring-2 ring-gres-blue/20"
+                      : "bg-card hover:border-gres-blue/30 hover:shadow-sm"
+                  )}
+                >
+                  <span className="block text-lg">{emoji}</span>
+                  <span className="mt-1 block text-xs font-semibold text-foreground">{label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Generate button */}
+          <Button
+            onClick={() => generateQuestion(selectedType)}
+            className="w-full bg-gres-blue hover:bg-gres-blue-light text-white"
+          >
+            🦎 Genereer vraag
+          </Button>
 
           <button
             onClick={handleReset}
             className="mt-3 w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Annuleren
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Phase: picking-type — choose question type
-  if (phase === "picking-type") {
-    return (
-      <div className="mt-6 animate-fade-in">
-        <div className="rounded-2xl border-2 border-gres-yellow/30 bg-gradient-to-br from-gres-yellow/10 to-gres-blue/5 p-5">
-          {/* GresGekko speech bubble */}
-          <div className="mb-4 flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gres-blue text-lg shadow-md">
-              🦎
-            </span>
-            <div className="rounded-2xl rounded-tl-sm bg-white dark:bg-gray-800 border border-gres-blue/10 px-4 py-2.5 shadow-sm">
-              <p className="text-sm font-medium text-foreground">
-                {LEVEL_INFO[selectedLevel - 1].emoji} {LEVEL_INFO[selectedLevel - 1].label} — nice keuze!
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Welk type vraag wil je?
-              </p>
-            </div>
-          </div>
-
-          {error && (
-            <p className="mb-3 text-center text-xs text-red-500">{error}</p>
-          )}
-
-          {/* Type buttons */}
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {TYPE_OPTIONS.map(({ type, label, emoji }) => (
-              <button
-                key={type}
-                onClick={() => generateQuestion(type)}
-                className="group rounded-xl border bg-card p-3 text-center transition-all hover:border-gres-blue/30 hover:shadow-md active:scale-95"
-              >
-                <span className="block text-lg">{emoji}</span>
-                <span className="mt-1 block text-xs font-semibold text-foreground">{label}</span>
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={() => setPhase("picking")}
-            className="mt-3 w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            ← Ander niveau kiezen
           </button>
         </div>
       </div>
