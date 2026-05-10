@@ -71,6 +71,7 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
   const [previousQuestions, setPreviousQuestions] = useState<string[]>([]);
   const [evaluation, setEvaluation] = useState<AIEvaluation | null>(null);
   const [evaluating, setEvaluating] = useState(false);
+  const [showExample, setShowExample] = useState(false);
 
   const [selectedType, setSelectedType] = useState<QuestionType>("multiple-choice");
 
@@ -184,6 +185,7 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
   function handleReset() {
     setEvaluation(null);
     setEvaluating(false);
+    setShowExample(false);
     setPhase("idle");
     setQuestion(null);
     setAnswer("");
@@ -467,86 +469,87 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
             {/* Open question: AI evaluation */}
             {question.type === "open" ? (
               <div className="space-y-3">
-                {/* Score indicator */}
+                {/* Compact score + tip in one line */}
                 {evaluating ? (
-                  <div className="rounded-xl bg-gres-blue/5 border border-gres-blue/15 p-4 flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gres-blue text-sm animate-bounce">🦎</span>
+                  <div className="flex items-center gap-3 rounded-xl bg-gres-blue/5 border border-gres-blue/15 px-4 py-3">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gres-blue text-xs animate-bounce">🦎</span>
                     <p className="text-sm text-muted-foreground">GresGekko beoordeelt je antwoord...</p>
                   </div>
                 ) : evaluation ? (
                   <div className={cn(
-                    "rounded-xl p-4 border",
+                    "rounded-xl px-4 py-3 border",
                     evaluation.score === "goed" && "bg-green-100/80 border-green-200",
                     evaluation.score === "deels" && "bg-yellow-100/80 border-yellow-200",
                     evaluation.score === "fout" && "bg-orange-100/80 border-orange-200",
                   )}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">
-                        {evaluation.score === "goed" ? "✅" : evaluation.score === "deels" ? "🟡" : "❌"}
+                    <p className="text-sm">
+                      <span className="font-bold">
+                        {evaluation.score === "goed" ? "✅ Helemaal goed!" : evaluation.score === "deels" ? "🟡 Gedeeltelijk goed" : "❌ Nog niet helemaal"}
                       </span>
-                      <p className="text-sm font-bold">
-                        {evaluation.score === "goed" ? "Helemaal goed!" : evaluation.score === "deels" ? "Gedeeltelijk goed" : "Nog niet helemaal"}
-                      </p>
-                    </div>
-                    {evaluation.tip && (
-                      <p className="mt-1 text-sm text-foreground/70">💡 {evaluation.tip}</p>
-                    )}
+                      {evaluation.tip && (
+                        <span className="text-foreground/60"> — 💡 {evaluation.tip}</span>
+                      )}
+                    </p>
                   </div>
                 ) : null}
 
-                {/* Student answer vs example */}
+                {/* Jouw antwoord */}
                 <div className="rounded-lg bg-white dark:bg-gray-800 border border-gres-blue/10 p-3">
                   <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     Jouw antwoord
                   </p>
                   <p className="text-sm text-foreground/80">{answer}</p>
                 </div>
-                <div className="rounded-lg bg-gres-yellow/10 border border-gres-yellow/20 p-3">
-                  <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-gres-blue">
-                    Voorbeeldantwoord
-                  </p>
-                  <p className="text-sm text-foreground/80">{question.answer}</p>
-                </div>
-              </div>
-            ) : (
-              /* MC / fill-in: correct/incorrect indicator */
-              <div
-                className={cn(
-                  "rounded-xl p-4",
-                  isCorrect
-                    ? "bg-green-100/80 border border-green-200"
-                    : "bg-orange-100/80 border border-orange-200"
-                )}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">{isCorrect ? "✅" : "❌"}</span>
-                  <p className="text-sm font-bold">
-                    {isCorrect ? "Goed zo!" : "Helaas, dat is niet juist."}
-                  </p>
-                </div>
-                {!isCorrect && (
-                  <div className="mt-1 space-y-1">
-                    <p className="text-sm text-foreground/70">
-                      Jouw antwoord: <span className="font-medium">{answer}</span>
+
+                {/* Voorbeeldantwoord + uitleg — inklapbaar */}
+                <button
+                  onClick={() => setShowExample(!showExample)}
+                  className="flex w-full items-center gap-2 rounded-lg border border-gres-yellow/30 bg-gres-yellow/5 px-3 py-2.5 text-left text-sm font-medium text-gres-blue transition-colors hover:bg-gres-yellow/10"
+                >
+                  <span className={cn("transition-transform text-xs", showExample && "rotate-90")}>▶</span>
+                  Bekijk voorbeeldantwoord & uitleg
+                </button>
+                {showExample && (
+                  <div className="rounded-xl bg-gres-yellow/10 border border-gres-yellow/20 p-4 space-y-2 animate-fade-in">
+                    <p className="text-sm text-foreground/80">
+                      <span className="font-semibold text-gres-blue">Voorbeeldantwoord: </span>
+                      {question.answer}
                     </p>
-                    <p className="text-sm text-foreground/70">
-                      Het goede antwoord is:{" "}
-                      <span className="font-semibold">{question.answer}</span>
+                    <p className="text-sm leading-relaxed text-foreground/70">
+                      <span className="font-semibold text-gres-blue">Uitleg: </span>
+                      {question.explanation}
                     </p>
                   </div>
                 )}
               </div>
-            )}
+            ) : (
+              /* MC / fill-in: compact score */
+              <div className="space-y-3">
+                <div
+                  className={cn(
+                    "rounded-xl px-4 py-3 border",
+                    isCorrect
+                      ? "bg-green-100/80 border-green-200"
+                      : "bg-orange-100/80 border-orange-200"
+                  )}
+                >
+                  <p className="text-sm">
+                    <span className="font-bold">{isCorrect ? "✅ Goed zo!" : "❌ Helaas, niet juist."}</span>
+                    {!isCorrect && (
+                      <span className="text-foreground/60"> — Het goede antwoord is: <span className="font-semibold text-foreground/80">{question.answer}</span></span>
+                    )}
+                  </p>
+                </div>
 
-            {/* Explanation */}
-            <div className="rounded-xl bg-gres-yellow/10 border border-gres-yellow/20 p-4">
-              <p className="mb-1 text-xs font-bold uppercase tracking-wider text-gres-blue">
-                Uitleg
-              </p>
-              <p className="text-sm leading-relaxed text-foreground/80">
-                {question.explanation}
-              </p>
-            </div>
+                {/* Uitleg — altijd zichtbaar bij MC/fill-in */}
+                <div className="rounded-xl bg-gres-yellow/10 border border-gres-yellow/20 p-4">
+                  <p className="text-sm leading-relaxed text-foreground/80">
+                    <span className="font-semibold text-gres-blue">Uitleg: </span>
+                    {question.explanation}
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="flex flex-wrap gap-2 pt-1">
