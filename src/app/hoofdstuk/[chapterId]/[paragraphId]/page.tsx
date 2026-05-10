@@ -184,65 +184,66 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
             </div>
           </section>
 
-          {/* Slides embed */}
-          {paragraph.slideUrl && (
-            <section className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm">
-              <div className="flex items-center justify-between border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
-                <div className="flex items-center gap-2">
-                  <span>📊</span>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                    Slides
-                  </h3>
-                </div>
-                <a
-                  href={paragraph.slideUrl}
-                  download
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-gres-blue/15 bg-white dark:bg-gray-800 px-3 py-1 text-xs font-medium text-gres-blue transition-all hover:shadow-sm hover:border-gres-blue/30"
-                >
-                  📥 Download
-                </a>
-              </div>
-              <div className="p-4">
-                <iframe
-                  className="w-full rounded-xl border-0"
-                  style={{ height: "450px" }}
-                  src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(`https://bio-buffy.vercel.app${paragraph.slideUrl}`)}`}
-                  title={`Slides - ${paragraph.title}`}
-                  loading="lazy"
-                  allowFullScreen
-                />
-              </div>
-            </section>
-          )}
-
-          <Separator className="bg-gres-blue/10" />
-
-          {/* Samenvatting van de les */}
-          <section>
-            <div className="mb-5 flex items-center gap-3">
-              <div className="h-1 w-8 rounded-full bg-gres-yellow" />
-              <h3 className="text-lg font-bold text-foreground">Samenvatting van de les</h3>
-            </div>
-            {paragraph.infographicUrl ? (
-              <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-gres-yellow/10 shadow-sm p-4">
-                <img
-                  src={paragraph.infographicUrl}
-                  alt={`Samenvatting ${paragraph.title}`}
-                  className="w-3/4 rounded-2xl mx-auto"
-                />
-              </div>
-            ) : (
-              <div className="overflow-hidden rounded-2xl border border-dashed border-gres-blue/20 bg-gradient-to-br from-gres-blue/5 to-gres-yellow/5 p-10 flex items-center justify-center min-h-[200px]">
-                <div className="text-center">
-                  <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gres-yellow/20">
-                    <span className="text-3xl">🖼️</span>
+          {/* Slides + Infographic naast elkaar */}
+          <section className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+            {/* Slides */}
+            {paragraph.slideUrl && (
+              <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col">
+                <div className="flex items-center justify-between border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
+                  <div className="flex items-center gap-2">
+                    <span>📊</span>
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                      Slides
+                    </h3>
                   </div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Samenvatting wordt later toegevoegd
-                  </p>
+                  <a
+                    href={paragraph.slideUrl}
+                    download
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-gres-blue/15 bg-white dark:bg-gray-800 px-3 py-1 text-xs font-medium text-gres-blue transition-all hover:shadow-sm hover:border-gres-blue/30"
+                  >
+                    📥 Download
+                  </a>
+                </div>
+                <div className="flex-1 p-4">
+                  <iframe
+                    className="w-full h-full rounded-xl border-0"
+                    style={{ minHeight: "400px" }}
+                    src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(`https://bio-buffy.vercel.app${paragraph.slideUrl}`)}`}
+                    title={`Slides - ${paragraph.title}`}
+                    loading="lazy"
+                    allowFullScreen
+                  />
                 </div>
               </div>
             )}
+
+            {/* Infographic / Samenvatting */}
+            <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col">
+              <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
+                <span>🖼️</span>
+                <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                  Samenvatting
+                </h3>
+              </div>
+              <div className="flex-1 p-4 flex items-center justify-center">
+                {paragraph.infographicUrl ? (
+                  <img
+                    src={paragraph.infographicUrl}
+                    alt={`Samenvatting ${paragraph.title}`}
+                    className="w-full rounded-xl"
+                  />
+                ) : (
+                  <div className="text-center py-10">
+                    <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gres-yellow/20">
+                      <span className="text-3xl">🖼️</span>
+                    </div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Samenvatting wordt later toegevoegd
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </section>
 
           <Separator className="bg-gres-blue/10" />
