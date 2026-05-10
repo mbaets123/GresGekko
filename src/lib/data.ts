@@ -17,6 +17,7 @@ function mapParagraph(
     videoUrl: (p.video_url as string) || "",
     transcript: (p.transcript as string) || "",
     infographicUrl: (p.infographic_url as string) || "",
+    slideUrl: (p.slide_url as string) || "",
     isExtra: (p.is_extra as boolean) || false,
     learningGoals: goals
       .filter((g) => g.paragraph_id === p.id)
@@ -79,6 +80,7 @@ export async function getChaptersLight(): Promise<Chapter[]> {
         videoUrl: "",
         transcript: "",
         infographicUrl: "",
+        slideUrl: "",
         isExtra: (p.is_extra as boolean) || false,
         learningGoals: [],
         concepts: [],
@@ -98,7 +100,7 @@ export const getChapter = unstable_cache(async function _getChapter(chapterId: s
   if (error || !ch) return null;
 
   const [paragraphsRes, goalsRes, conceptsRes] = await Promise.all([
-    supabase.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra, video_url, infographic_url").eq("chapter_id", chapterId).order("order"),
+    supabase.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra, video_url, infographic_url, slide_url").eq("chapter_id", chapterId).order("order"),
     supabase.from("learning_goals").select("paragraph_id, text, \"order\"").like("paragraph_id", `${chapterId}-%`).order("order"),
     supabase.from("concepts").select("paragraph_id, term, definition, \"order\"").like("paragraph_id", `${chapterId}-%`).order("order"),
   ]);

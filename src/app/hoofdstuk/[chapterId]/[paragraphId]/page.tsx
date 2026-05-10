@@ -85,9 +85,20 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
               </span>
               <div className="h-0.5 w-6 rounded-full bg-gres-yellow" />
             </div>
-            <h1 className="font-heading text-2xl tracking-wide text-gres-blue sm:text-3xl">
-              {paragraph.title}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="font-heading text-2xl tracking-wide text-gres-blue sm:text-3xl">
+                {paragraph.title}
+              </h1>
+              {paragraph.slideUrl && (
+                <a
+                  href={paragraph.slideUrl}
+                  download
+                  className="group inline-flex items-center gap-1.5 rounded-xl border border-gres-yellow/30 bg-gres-yellow/10 px-3 py-1.5 text-xs font-semibold text-gres-blue transition-all hover:border-gres-yellow/50 hover:bg-gres-yellow/20 hover:shadow-sm"
+                >
+                  📥 Slides
+                </a>
+              )}
+            </div>
           </div>
 
           {/* Leerdoelen & Begrippen balk */}

@@ -15,6 +15,7 @@ export interface Paragraph {
   videoUrl: string;
   transcript: string;
   infographicUrl: string;
+  slideUrl?: string;
   learningGoals: string[];
   concepts: Concept[];
   isExtra?: boolean;
