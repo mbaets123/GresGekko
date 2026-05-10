@@ -97,6 +97,8 @@ interface QuestionSectionProps {
 export function QuestionSection({ questions, paragraphId }: QuestionSectionProps) {
   const [activeLevel, setActiveLevel] = useState<number | null>(null);
   const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set());
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiCount, setAiCount] = useState(0);
 
   const handleAnswered = useCallback((id: string) => {
     setAnsweredIds((prev) => new Set(prev).add(id));
@@ -109,7 +111,7 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
           <div className="h-1 w-8 rounded-full bg-gres-yellow" />
           <h3 className="text-lg font-bold text-foreground">Oefenvragen</h3>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {DIFFICULTY_LABELS.map(({ level, label, desc, color }) => (
             <div
               key={level}
@@ -127,8 +129,19 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
               </p>
             </div>
           ))}
+          {/* AI generator card */}
+          <button
+            onClick={() => setAiOpen(true)}
+            className="group relative overflow-hidden rounded-2xl border-2 border-dashed border-gres-yellow/40 bg-gres-yellow/5 p-5 text-center transition-all hover:border-gres-yellow hover:bg-gres-yellow/15 hover:shadow-md"
+          >
+            <div className="mb-2 text-2xl transition-transform group-hover:scale-110">🦎</div>
+            <p className="text-sm font-bold text-gres-blue">AI Vraag</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Genereer een nieuwe vraag</p>
+          </button>
         </div>
-        <AIQuestionGenerator paragraphId={paragraphId} />
+        {aiOpen && (
+          <AIQuestionGenerator paragraphId={paragraphId} startOpen onIdle={() => setAiOpen(false)} />
+        )}
       </section>
     );
   }
@@ -162,7 +175,7 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
         </span>
       </div>
 
-      {/* Level filter tabs */}
+      {/* Level filter tabs + AI button */}
       <div className="mb-6 flex flex-wrap gap-2">
         {DIFFICULTY_LABELS.map(({ level, label, desc, color }) => {
           const count = questionsPerLevel.find((q) => q.level === level)?.questions.length || 0;
@@ -180,17 +193,33 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
             />
           );
         })}
+        {/* AI generate button — same size as level buttons */}
+        <button
+          onClick={() => setAiOpen(true)}
+          className={cn(
+            "group relative overflow-hidden rounded-full border-2 border-dashed border-gres-yellow/40 px-4 py-2 text-sm font-medium transition-all hover:border-gres-yellow hover:bg-gres-yellow/15 hover:shadow-md",
+            aiOpen ? "border-gres-yellow bg-gres-yellow/15 shadow-md" : "bg-gres-yellow/5"
+          )}
+        >
+          <span className="text-xs mr-1">🦎</span>
+          AI Vraag
+          {aiCount > 0 && (
+            <span className="ml-1.5 rounded-full bg-gres-yellow/30 px-1.5 py-0.5 text-[10px] font-bold">
+              {aiCount}
+            </span>
+          )}
+        </button>
       </div>
 
-      {/* Hint when no level selected */}
-      {!activeLevel && (
+      {/* Hint when no level selected and AI not open */}
+      {!activeLevel && !aiOpen && (
         <p className="text-center text-sm text-muted-foreground py-4">
           Klik op een niveau hierboven om de vragen te bekijken
         </p>
       )}
 
       {/* Questions with fade-in animation */}
-      {filteredQuestions.length > 0 && (
+      {filteredQuestions.length > 0 && !aiOpen && (
         <div key={activeLevel} className="space-y-4 animate-fade-in">
           {filteredQuestions.map((q, i) => (
             <QuestionCard key={q.id} question={q} index={i} onAnswered={handleAnswered} />
@@ -198,8 +227,10 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
         </div>
       )}
 
-      {/* AI Question Generator */}
-      <AIQuestionGenerator paragraphId={paragraphId} />
+      {/* AI Question Generator — expanded below */}
+      {aiOpen && (
+        <AIQuestionGenerator paragraphId={paragraphId} startOpen onIdle={() => setAiOpen(false)} />
+      )}
     </section>
   );
 }

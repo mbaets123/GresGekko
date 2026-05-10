@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
@@ -57,9 +57,13 @@ function randomIntro(): string {
 
 interface AIQuestionGeneratorProps {
   paragraphId: string;
+  /** If true, start in picking phase immediately */
+  startOpen?: boolean;
+  /** Called when generator returns to idle */
+  onIdle?: () => void;
 }
 
-export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
+export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuestionGeneratorProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [intro, setIntro] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<number>(1);
@@ -192,8 +196,26 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
     setError("");
   }
 
-  // Phase: idle — show the generate button
+  // Auto-start in picking mode if triggered externally
+  useEffect(() => {
+    if (startOpen && phase === "idle") {
+      startPicking();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startOpen]);
+
+  // Notify parent when returning to idle
+  useEffect(() => {
+    if (phase === "idle" && onIdle) {
+      onIdle();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
+
+  // Phase: idle — if parent controls the trigger, render nothing
   if (phase === "idle") {
+    if (onIdle) return null;
+
     return (
       <div className="mt-6 flex flex-col items-center gap-2">
         <button
