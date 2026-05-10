@@ -33,8 +33,52 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
 
         {/* Main content */}
         <div className="min-w-0 flex-1 space-y-8">
-          {/* Page title */}
+          {/* Navigatie + Page title */}
           <div>
+            {(() => {
+              const currentIndex = chapter.paragraphs.findIndex((p) => p.id === paragraph.id);
+              const prev = currentIndex > 0 ? chapter.paragraphs[currentIndex - 1] : null;
+              const next = currentIndex < chapter.paragraphs.length - 1 ? chapter.paragraphs[currentIndex + 1] : null;
+
+              return (
+                <div className="mb-4 flex items-center justify-between">
+                  {prev ? (
+                    <Link
+                      href={`/hoofdstuk/${chapter.id}/${prev.id}`}
+                      className="group inline-flex items-center gap-2 rounded-xl border border-gres-blue/15 bg-card px-3 py-2 text-xs transition-all hover:shadow-sm hover:border-gres-blue/30"
+                    >
+                      <span className="text-muted-foreground">←</span>
+                      <span className="font-semibold text-gres-blue group-hover:text-gres-blue-light">
+                        {chapter.order}.{prev.order} {prev.title}
+                      </span>
+                    </Link>
+                  ) : (
+                    <div />
+                  )}
+                  {next ? (
+                    <Link
+                      href={`/hoofdstuk/${chapter.id}/${next.id}`}
+                      className="group inline-flex items-center gap-2 rounded-xl border border-gres-yellow/25 bg-gres-yellow/5 px-3 py-2 text-xs transition-all hover:shadow-sm hover:border-gres-yellow/40"
+                    >
+                      <span className="font-semibold text-gres-blue group-hover:text-gres-blue-light">
+                        {chapter.order}.{next.order} {next.title}
+                      </span>
+                      <span className="text-muted-foreground">→</span>
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/hoofdstuk/${chapter.id}`}
+                      className="group inline-flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-xs transition-all hover:shadow-sm hover:border-green-300"
+                    >
+                      <span className="font-semibold text-green-700 group-hover:text-green-800">
+                        Terug naar overzicht
+                      </span>
+                      <span>✅</span>
+                    </Link>
+                  )}
+                </div>
+              );
+            })()}
             <div className="mb-1 flex items-center gap-2">
               <span className="font-heading text-sm text-gres-yellow">
                 {chapter.order}.{paragraph.order}
@@ -173,52 +217,6 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
           <Separator className="bg-gres-blue/10" />
 
           <QuestionSection questions={questions} paragraphId={paragraphId} />
-
-          {/* Vorige / Volgende navigatie */}
-          {(() => {
-            const currentIndex = chapter.paragraphs.findIndex((p) => p.id === paragraph.id);
-            const prev = currentIndex > 0 ? chapter.paragraphs[currentIndex - 1] : null;
-            const next = currentIndex < chapter.paragraphs.length - 1 ? chapter.paragraphs[currentIndex + 1] : null;
-
-            return (
-              <div className="flex items-center justify-between pt-4">
-                {prev ? (
-                  <Link
-                    href={`/hoofdstuk/${chapter.id}/${prev.id}`}
-                    className="group inline-flex items-center gap-2 rounded-xl border border-gres-blue/15 bg-card px-3 py-2 text-xs transition-all hover:shadow-sm hover:border-gres-blue/30"
-                  >
-                    <span className="text-muted-foreground">←</span>
-                    <span className="font-semibold text-gres-blue group-hover:text-gres-blue-light">
-                      {chapter.order}.{prev.order} {prev.title}
-                    </span>
-                  </Link>
-                ) : (
-                  <div />
-                )}
-                {next ? (
-                  <Link
-                    href={`/hoofdstuk/${chapter.id}/${next.id}`}
-                    className="group inline-flex items-center gap-2 rounded-xl border border-gres-yellow/25 bg-gres-yellow/5 px-3 py-2 text-xs transition-all hover:shadow-sm hover:border-gres-yellow/40"
-                  >
-                    <span className="font-semibold text-gres-blue group-hover:text-gres-blue-light">
-                      {chapter.order}.{next.order} {next.title}
-                    </span>
-                    <span className="text-muted-foreground">→</span>
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/hoofdstuk/${chapter.id}`}
-                    className="group inline-flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-xs transition-all hover:shadow-sm hover:border-green-300"
-                  >
-                    <span className="font-semibold text-green-700 group-hover:text-green-800">
-                      Terug naar overzicht
-                    </span>
-                    <span>✅</span>
-                  </Link>
-                )}
-              </div>
-            );
-          })()}
         </div>
       </div>
     </div>
