@@ -70,12 +70,13 @@ export default async function HomePage() {
               </h2>
 
               <p className="text-sm leading-relaxed text-foreground/80">
-                Yo! Ik ben dus gemaakt door mijn baas{" "}
-                <strong className="text-foreground">Mike Baets</strong> — biologiedocent
-                op het Grescollege. Hij heeft mij alles geleerd zodat ik jullie zo goed
-                mogelijk op weg kan helpen. Hij wilde biologie net iets leuker,
-                persoonlijker en toegankelijker maken. Daarom heeft hij mij gecre&euml;erd.
-                Bedank hem maar een keer als je hem ziet! 😄
+                Fakka! Voor degene die zich afvragen hoe ik precies weet wat jij moet
+                weten.. dat heb ik geleerd van mijn baas{" "}
+                <strong className="text-foreground">Mike</strong>. Hij is docent biologie
+                op het Grescollege. Hij heeft me alle tips en tricks geleerd om jullie zo
+                goed als mogelijk op weg te helpen. Zijn doel was om biologie net iets
+                leuker, persoonlijker en toegankelijker maken. Daarom heeft hij mij
+                gecre&euml;erd.
               </p>
 
               <div>
@@ -83,9 +84,10 @@ export default async function HomePage() {
                   🎯 Onze visie
                 </p>
                 <p className="text-sm leading-relaxed text-foreground/80">
-                  Ik ben er niet om je docent te vervangen — ik ben jouw 24/7 beschikbare
-                  maatje erbij. Oefenvragen, uitleg op jouw persoonlijke niveau en directe
-                  feedback, allemaal voor jou. Wanneer je maar wilt.
+                  Ik ben er niet om je docent te vervangen (dat zou hij niet zo leuk vinden
+                  namelijk). Ik ben jouw 24/7 beschikbare maatje voor erbij. Oefenvragen,
+                  uitleg op jouw persoonlijke niveau en directe feedback, allemaal speciaal
+                  voor jou, wanneer je maar wilt (ja, ook om 4 uur &apos;s nachts 😜)
                 </p>
               </div>
 
@@ -105,7 +107,7 @@ export default async function HomePage() {
                   >
                     VO-content
                   </a>{" "}
-                  vormt dit de basis van elke les. Goede uitleg + AI-hulp = combo! 🔥
+                  vormt dit de basis van elke les. Goede uitleg + AI-hulp = ultieme combo! 🔥
                 </p>
               </div>
 
