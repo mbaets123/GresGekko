@@ -93,7 +93,7 @@ export default async function HomePage() {
 
               <div>
                 <p className="mb-1 text-sm font-bold text-gres-blue">
-                  🎬 De video&apos;s
+                  🎬 De content
                 </p>
                 <p className="text-sm leading-relaxed text-foreground/80">
                   Alle uitlegvideo&apos;s komen van het YouTube-kanaal van{" "}
