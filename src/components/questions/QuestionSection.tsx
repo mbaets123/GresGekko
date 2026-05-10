@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import type { Question } from "@/types";
 
 const DIFFICULTY_LABELS = [
-  { level: 1, label: "Reproductie", desc: "Kennis onthouden", color: "from-green-400 to-emerald-500" },
-  { level: 2, label: "Toepassen", desc: "Geoefende situaties", color: "from-blue-400 to-cyan-500" },
-  { level: 3, label: "Nieuwe situaties", desc: "Onbekende contexten", color: "from-orange-400 to-amber-500" },
-  { level: 4, label: "Inzicht", desc: "Verbanden leggen", color: "from-purple-400 to-violet-500" },
+  { level: 1, label: "Reproductie", desc: "Je herhaalt wat je hebt geleerd", color: "from-green-400 to-emerald-500" },
+  { level: 2, label: "Toepassing 1", desc: "Je gebruikt de stof in een bekende situatie", color: "from-blue-400 to-cyan-500" },
+  { level: 3, label: "Toepassing 2", desc: "Je gebruikt de stof in een nieuwe situatie", color: "from-orange-400 to-amber-500" },
+  { level: 4, label: "Inzicht", desc: "Je moet zelf verbanden leggen en nadenken", color: "from-purple-400 to-violet-500" },
 ];
 
 /* ---------- Level button with balloon tooltip ---------- */
