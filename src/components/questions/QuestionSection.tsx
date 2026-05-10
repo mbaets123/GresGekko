@@ -81,7 +81,7 @@ function LevelButton({
             tipVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
           )}
         >
-          {desc} — {count} {count === 1 ? "vraag" : "vragen"}
+          {desc}
           <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gres-blue" />
         </span>
       )}
