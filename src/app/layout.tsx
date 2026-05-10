@@ -17,9 +17,9 @@ const kanit = Kanit({
 });
 
 export const metadata: Metadata = {
-  title: "Biologie Leeromgeving | Grescollege VMBO-KT",
+  title: "Biologie Leeromgeving | Grescollege vmbo - havo",
   description:
-    "Online leeromgeving voor biologie VMBO-KT leerjaar 1 met AI-ondersteuning, videolessen en oefenvragen.",
+    "Online leeromgeving voor biologie vmbo - havo leerjaar 1 met AI-ondersteuning, videolessen en oefenvragen.",
 };
 
 export default function RootLayout({

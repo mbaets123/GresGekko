@@ -25,7 +25,7 @@ export function Header() {
               Biologie met GresGekko
             </span>
             <span className="text-[10px] font-medium uppercase tracking-widest text-gres-yellow">
-              Leerjaar 1 VMBO-KT
+              Leerjaar 1 vmbo - havo
             </span>
           </div>
         </Link>

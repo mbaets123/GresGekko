@@ -15,7 +15,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gres-blue/75" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-gres-yellow/20 px-4 py-1.5 text-sm font-medium text-gres-yellow backdrop-blur">
-            🎓 Leerjaar 1 &middot; VMBO-KT
+            🎓 Leerjaar 1 &middot; vmbo - havo
           </div>
           <h1 className="font-heading text-4xl tracking-wide text-white sm:text-5xl lg:text-6xl">
             Biologie met GresGekko 🦎
