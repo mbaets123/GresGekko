@@ -23,15 +23,25 @@ export function ChapterCard({ chapter }: ChapterCardProps) {
       <Card
         className={`group relative h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${colors.border}`}
       >
+        {/* Hero banner met Buffy afbeelding */}
+        <div className="relative h-32 overflow-hidden">
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-300 group-hover:scale-105"
+            style={{ backgroundImage: `url('/chapters/${chapter.order}.jpg')` }}
+          />
+          <div className="absolute inset-0 bg-gres-blue/60 transition-opacity duration-300 group-hover:bg-gres-blue/50" />
+          <div className="relative flex h-full items-end p-4">
+            <div
+              className={`flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 text-2xl shadow-sm backdrop-blur-sm transition-transform duration-300 group-hover:scale-110`}
+            >
+              {chapter.icon}
+            </div>
+          </div>
+        </div>
         <div
-          className={`absolute inset-0 bg-gradient-to-br ${colors.bg} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
+          className={`absolute inset-0 bg-gradient-to-br ${colors.bg} opacity-0 transition-opacity duration-300 pointer-events-none`}
         />
         <CardHeader className="relative pb-3">
-          <div
-            className={`mb-3 flex h-14 w-14 items-center justify-center rounded-2xl ${colors.icon} text-3xl shadow-sm transition-transform duration-300 group-hover:scale-110`}
-          >
-            {chapter.icon}
-          </div>
           <CardTitle className="font-heading text-lg tracking-wide transition-colors group-hover:text-gres-blue">
             Hoofdstuk {chapter.order}
           </CardTitle>
