@@ -14,8 +14,6 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
 
   if (!chapter) return notFound();
 
-  const hasExtra = chapter.paragraphs.some((p) => p.isExtra);
-
   return (
     <>
       {/* Chapter hero */}
@@ -44,25 +42,9 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
 
       {/* Paragraph grid */}
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-1 w-8 rounded-full bg-gres-yellow" />
-            <h2 className="text-lg font-semibold">Paragrafen</h2>
-          </div>
-
-          {/* Legenda */}
-          {hasExtra && (
-            <div className="flex items-center gap-4 text-xs">
-              <div className="flex items-center gap-1.5">
-                <span className="inline-block h-3 w-3 rounded border border-gres-yellow/40 bg-gres-yellow/15" />
-                <span className="text-muted-foreground">Verplicht</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="inline-block h-3 w-3 rounded border border-gres-blue/40 bg-gres-blue/15" />
-                <span className="text-muted-foreground">Extra</span>
-              </div>
-            </div>
-          )}
+        <div className="mb-6 flex items-center gap-3">
+          <div className="h-1 w-8 rounded-full bg-gres-yellow" />
+          <h2 className="text-lg font-semibold">Paragrafen</h2>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
