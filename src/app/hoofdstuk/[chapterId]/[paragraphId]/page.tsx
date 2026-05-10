@@ -7,6 +7,7 @@ import { AIBuddyChat } from "@/components/ai/AIBuddyChat";
 import { HighlightText } from "@/components/ui/highlight-text";
 import { ConceptChip } from "@/components/ui/ConceptChip";
 import { MarkVisited } from "@/components/ui/MarkVisited";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { getParagraph } from "@/lib/data";
 import { getQuestions } from "@/lib/questions";
 
@@ -227,10 +228,9 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
               </div>
               <div className="flex-1 p-4 flex items-center justify-center">
                 {paragraph.infographicUrl ? (
-                  <img
+                  <ImageLightbox
                     src={paragraph.infographicUrl}
                     alt={`Samenvatting ${paragraph.title}`}
-                    className="w-full rounded-xl"
                   />
                 ) : (
                   <div className="text-center py-10">
