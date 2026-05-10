@@ -198,7 +198,7 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
         </button>
         {/* Progress bar — compact, right-aligned */}
         <div className="ml-auto flex items-center gap-2">
-          <div className="relative h-2 w-24 overflow-hidden rounded-full bg-gres-blue/10">
+          <div className="relative h-2 flex-1 min-w-[120px] overflow-hidden rounded-full bg-gres-blue/10">
             <div
               className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-gres-blue to-gres-blue-light transition-all duration-500 ease-out"
               style={{ width: `${questions.length > 0 ? (answeredIds.size / questions.length) * 100 : 0}%` }}
