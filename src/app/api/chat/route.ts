@@ -1,21 +1,6 @@
 import { NextRequest } from "next/server";
-import { supabase } from "@/lib/supabase";
-
-/* ---------- Simple in-memory rate limiter ---------- */
-const rateMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 30; // max requests per window
-const RATE_WINDOW = 60_000; // 1 minute
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return false;
-  }
-  entry.count++;
-  return entry.count > RATE_LIMIT;
-}
+import { supabaseServer } from "@/lib/supabase-server";
+import { isRateLimited } from "@/lib/rate-limit";
 
 /* ---------- Input validation ---------- */
 const MAX_MESSAGE_LENGTH = 500;
@@ -39,7 +24,7 @@ function sanitizeMessages(raw: unknown): { role: string; content: string }[] | n
 export async function POST(req: NextRequest) {
   // Rate limiting
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (isRateLimited(ip)) {
+  if (isRateLimited(ip, "chat", 30, 60_000)) {
     return Response.json(
       { error: "Je stuurt te veel berichten. Wacht even en probeer het opnieuw." },
       { status: 429 }
@@ -54,7 +39,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Missing data" }, { status: 400 });
   }
 
-  const { data: paragraph } = await supabase
+  const { data: paragraph } = await supabaseServer
     .from("paragraphs")
     .select("title, transcript")
     .eq("id", paragraphId)
@@ -67,13 +52,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { data: goals } = await supabase
+  const { data: goals } = await supabaseServer
     .from("learning_goals")
     .select("text")
     .eq("paragraph_id", paragraphId)
     .order("order");
 
-  const { data: concepts } = await supabase
+  const { data: concepts } = await supabaseServer
     .from("concepts")
     .select("term, definition")
     .eq("paragraph_id", paragraphId)

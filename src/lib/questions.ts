@@ -1,8 +1,8 @@
-import { supabase } from "./supabase";
+import { supabaseServer } from "./supabase-server";
 import type { Question } from "@/types";
 
 export async function getQuestions(paragraphId: string): Promise<Question[]> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseServer
     .from("questions")
     .select("*")
     .eq("paragraph_id", paragraphId)

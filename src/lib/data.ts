@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { supabase } from "./supabase";
+import { supabaseServer } from "./supabase-server";
 import type { Chapter, Paragraph, Concept } from "@/types";
 
 /* ---------- helpers ---------- */
@@ -32,10 +32,10 @@ function mapParagraph(
 
 export const getChapters = unstable_cache(async function _getChapters(): Promise<Chapter[]> {
   const [chaptersRes, paragraphsRes, goalsRes, conceptsRes] = await Promise.all([
-    supabase.from("chapters").select("*").order("order"),
-    supabase.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra").order("order"),
-    supabase.from("learning_goals").select("paragraph_id, text").order("order"),
-    supabase.from("concepts").select("paragraph_id, term, definition").order("order"),
+    supabaseServer.from("chapters").select("*").order("order"),
+    supabaseServer.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra").order("order"),
+    supabaseServer.from("learning_goals").select("paragraph_id, text").order("order"),
+    supabaseServer.from("concepts").select("paragraph_id, term, definition").order("order"),
   ]);
 
   if (chaptersRes.error) throw chaptersRes.error;
@@ -57,8 +57,8 @@ export const getChapters = unstable_cache(async function _getChapters(): Promise
 
 export async function getChaptersLight(): Promise<Chapter[]> {
   const [chaptersRes, paragraphsRes] = await Promise.all([
-    supabase.from("chapters").select("*").order("order"),
-    supabase.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra").order("order"),
+    supabaseServer.from("chapters").select("*").order("order"),
+    supabaseServer.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra").order("order"),
   ]);
 
   if (chaptersRes.error) throw chaptersRes.error;
@@ -90,32 +90,38 @@ export async function getChaptersLight(): Promise<Chapter[]> {
 
 /* ---------- Hoofdstuk-pagina: één hoofdstuk ---------- */
 
-export const getChapter = unstable_cache(async function _getChapter(chapterId: string): Promise<Chapter | null> {
-  const { data: ch, error } = await supabase
-    .from("chapters")
-    .select("*")
-    .eq("id", chapterId)
-    .single();
+export function getChapter(chapterId: string): Promise<Chapter | null> {
+  return unstable_cache(
+    async () => {
+      const { data: ch, error } = await supabaseServer
+        .from("chapters")
+        .select("*")
+        .eq("id", chapterId)
+        .single();
 
-  if (error || !ch) return null;
+      if (error || !ch) return null;
 
-  const [paragraphsRes, goalsRes, conceptsRes] = await Promise.all([
-    supabase.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra, video_url, infographic_url, slide_url").eq("chapter_id", chapterId).order("order"),
-    supabase.from("learning_goals").select("paragraph_id, text, \"order\"").like("paragraph_id", `${chapterId}-%`).order("order"),
-    supabase.from("concepts").select("paragraph_id, term, definition, \"order\"").like("paragraph_id", `${chapterId}-%`).order("order"),
-  ]);
+      const [paragraphsRes, goalsRes, conceptsRes] = await Promise.all([
+        supabaseServer.from("paragraphs").select("id, chapter_id, title, \"order\", is_extra, video_url, infographic_url, slide_url").eq("chapter_id", chapterId).order("order"),
+        supabaseServer.from("learning_goals").select("paragraph_id, text, \"order\"").like("paragraph_id", `${chapterId}-%`).order("order"),
+        supabaseServer.from("concepts").select("paragraph_id, term, definition, \"order\"").like("paragraph_id", `${chapterId}-%`).order("order"),
+      ]);
 
-  return {
-    id: ch.id,
-    title: ch.title,
-    description: ch.description,
-    order: ch.order,
-    icon: ch.icon,
-    paragraphs: (paragraphsRes.data || []).map((p) =>
-      mapParagraph(p, goalsRes.data || [], conceptsRes.data || [])
-    ),
-  };
-}, ["chapter"], { revalidate: 60 });
+      return {
+        id: ch.id,
+        title: ch.title,
+        description: ch.description,
+        order: ch.order,
+        icon: ch.icon,
+        paragraphs: (paragraphsRes.data || []).map((p) =>
+          mapParagraph(p, goalsRes.data || [], conceptsRes.data || [])
+        ),
+      };
+    },
+    ["chapter", chapterId],
+    { revalidate: 60 }
+  )();
+}
 
 /* ---------- Paragraaf-pagina: één paragraaf + chapter context ---------- */
 

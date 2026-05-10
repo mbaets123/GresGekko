@@ -1,25 +1,10 @@
 import { NextRequest } from "next/server";
-import { supabase } from "@/lib/supabase";
-
-/* ---------- Rate limiter ---------- */
-const rateMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 15;
-const RATE_WINDOW = 60_000;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return false;
-  }
-  entry.count++;
-  return entry.count > RATE_LIMIT;
-}
+import { supabaseServer } from "@/lib/supabase-server";
+import { isRateLimited } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (isRateLimited(ip)) {
+  if (isRateLimited(ip, "evaluate", 15, 60_000)) {
     return Response.json(
       { error: "Te veel verzoeken. Wacht even." },
       { status: 429 }
@@ -39,13 +24,13 @@ export async function POST(req: NextRequest) {
   // Fetch lesson context for better evaluation
   let lessonContext = "";
   if (paragraphId) {
-    const { data: paragraph } = await supabase
+    const { data: paragraph } = await supabaseServer
       .from("paragraphs")
       .select("title, transcript")
       .eq("id", paragraphId)
       .single();
 
-    const { data: concepts } = await supabase
+    const { data: concepts } = await supabaseServer
       .from("concepts")
       .select("term, definition")
       .eq("paragraph_id", paragraphId)

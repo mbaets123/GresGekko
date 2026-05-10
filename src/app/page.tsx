@@ -1,9 +1,12 @@
 import { ChapterCard } from "@/components/chapter/ChapterCard";
 import { SearchBar } from "@/components/search/SearchBar";
-import { getChapters } from "@/lib/data";
+import { getChapters, getChaptersLight } from "@/lib/data";
 
 export default async function HomePage() {
-  const chapters = await getChapters();
+  const [chapters, chaptersLight] = await Promise.all([
+    getChapters(),       // full data for SearchBar (concepts, goals)
+    getChaptersLight(),  // light data for ChapterCards (no transcripts)
+  ]);
   return (
     <>
       {/* Hero section */}
@@ -41,7 +44,7 @@ export default async function HomePage() {
           </h2>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {chapters.map((chapter) => (
+          {chaptersLight.map((chapter) => (
             <ChapterCard key={chapter.id} chapter={chapter} />
           ))}
         </div>

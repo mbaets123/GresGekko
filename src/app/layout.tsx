@@ -31,7 +31,16 @@ export default function RootLayout({
     <html
       lang="nl"
       className={`${titanOne.variable} ${kanit.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        {/* Inline dark mode script prevents flash of white on page load. Content is a static string literal — no user input involved, safe from XSS. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col font-sans">
         <Header />
         <main className="flex-1">{children}</main>
