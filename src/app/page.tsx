@@ -114,20 +114,20 @@ export default async function HomePage() {
               {/* Links */}
               <div className="flex flex-wrap gap-3 pt-2">
                 <a
-                  href="https://www.grescollege.nl/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border-2 border-gres-blue/20 bg-gres-blue/5 px-4 py-2 text-xs font-semibold text-gres-blue transition-all hover:border-gres-blue/40 hover:shadow-sm"
-                >
-                  🏫 Grescollege
-                </a>
-                <a
                   href="https://www.youtube.com/channel/UCV-_BhPt2wrBQYzAowlRMCA"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border-2 border-green-700/30 bg-green-800/10 px-4 py-2 text-xs font-semibold text-green-800 transition-all hover:border-green-700/50 hover:shadow-sm"
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-green-400/40 bg-green-50 px-4 py-2 text-xs font-semibold text-green-700 transition-all hover:border-green-500/50 hover:shadow-sm"
                 >
                   ▶️ Joost op YouTube
+                </a>
+                <a
+                  href="https://www.vo-content.nl/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-orange-300/50 bg-orange-50 px-4 py-2 text-xs font-semibold text-orange-700 transition-all hover:border-orange-400/60 hover:shadow-sm"
+                >
+                  📚 VO-content
                 </a>
                 <a
                   href="https://www.linkedin.com/in/mike-baets-7b6464156/"
@@ -138,12 +138,12 @@ export default async function HomePage() {
                   💼 Mike op LinkedIn
                 </a>
                 <a
-                  href="https://www.vo-content.nl/"
+                  href="https://www.grescollege.nl/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border-2 border-green-200 bg-green-50 px-4 py-2 text-xs font-semibold text-green-600 transition-all hover:border-green-300 hover:shadow-sm"
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-gres-yellow/40 bg-gres-yellow/10 px-4 py-2 text-xs font-semibold text-gres-blue transition-all hover:border-gres-yellow/60 hover:shadow-sm"
                 >
-                  📚 VO-content
+                  🏫 Grescollege
                 </a>
               </div>
             </div>
