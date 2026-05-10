@@ -88,7 +88,6 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
                 count === 0 && "opacity-40 cursor-not-allowed"
               )}
               disabled={count === 0}
-              title={`${label} — ${count} ${count === 1 ? "vraag" : "vragen"}`}
             >
               <span className="text-xs mr-1">
                 {"★".repeat(level)}
