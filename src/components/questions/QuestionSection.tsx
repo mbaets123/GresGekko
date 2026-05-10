@@ -96,6 +96,11 @@ interface QuestionSectionProps {
 
 export function QuestionSection({ questions, paragraphId }: QuestionSectionProps) {
   const [activeLevel, setActiveLevel] = useState<number | null>(null);
+  const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set());
+
+  const handleAnswered = useCallback((id: string) => {
+    setAnsweredIds((prev) => new Set(prev).add(id));
+  }, []);
 
   if (questions.length === 0) {
     return (
@@ -142,8 +147,18 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
       <div className="mb-5 flex items-center gap-3">
         <div className="h-1 w-8 rounded-full bg-gres-yellow" />
         <h3 className="text-lg font-bold text-foreground">Oefenvragen</h3>
-        <span className="rounded-full bg-gres-blue/10 px-2.5 py-0.5 text-xs font-semibold text-gres-blue">
-          {questions.length} vragen
+      </div>
+
+      {/* Progress bar */}
+      <div className="mb-5 flex items-center gap-3">
+        <div className="relative h-3 flex-1 overflow-hidden rounded-full bg-gres-blue/10">
+          <div
+            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-gres-blue to-gres-blue-light transition-all duration-500 ease-out"
+            style={{ width: `${questions.length > 0 ? (answeredIds.size / questions.length) * 100 : 0}%` }}
+          />
+        </div>
+        <span className="text-sm font-semibold text-foreground whitespace-nowrap">
+          {answeredIds.size}/{questions.length} vragen
         </span>
       </div>
 
@@ -178,7 +193,7 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
       {filteredQuestions.length > 0 && (
         <div key={activeLevel} className="space-y-4 animate-fade-in">
           {filteredQuestions.map((q, i) => (
-            <QuestionCard key={q.id} question={q} index={i} />
+            <QuestionCard key={q.id} question={q} index={i} onAnswered={handleAnswered} />
           ))}
         </div>
       )}

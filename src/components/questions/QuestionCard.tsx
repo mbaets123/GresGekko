@@ -18,9 +18,10 @@ const DIFFICULTY_LABELS: Record<number, string> = {
 interface QuestionCardProps {
   question: Question;
   index: number;
+  onAnswered?: (questionId: string) => void;
 }
 
-export function QuestionCard({ question, index }: QuestionCardProps) {
+export function QuestionCard({ question, index, onAnswered }: QuestionCardProps) {
   const [answer, setAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -60,6 +61,7 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
     if (question.type === "open") {
       setIsCorrect(false);
       setSubmitted(true);
+      onAnswered?.(question.id);
       return;
     }
     const correct = question.type === "fill-in"
@@ -67,6 +69,7 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
       : normalize(answer) === normalize(question.answer);
     setIsCorrect(correct);
     setSubmitted(true);
+    onAnswered?.(question.id);
   }
 
   function handleRetry() {
