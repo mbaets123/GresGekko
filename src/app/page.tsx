@@ -21,9 +21,9 @@ export default async function HomePage() {
             Biologie met Buffy 🦬
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-lg text-white/70">
-            Yo! Ik ben Buffy, jouw AI-bio-hulpje. Bekijk de video&apos;s
-            van Joost, oefen met vragen en stel mij alles wat je wilt weten!
-            Samen worden wij nog slimmer.
+            Yo! Ik ben Buffy — de buffel die biologie voor je kraak.
+            Video&apos;s kijken, vragen oefenen of gewoon even vragen wat
+            je niet snapt? Ik got you. 💪
           </p>
         </div>
       </section>
