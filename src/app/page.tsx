@@ -58,7 +58,7 @@ export default async function HomePage() {
                   style={{ backgroundImage: "url('/Gresbuffy.jpg')" }}
                 />
               </div>
-              <div className="mx-auto -mt-5 w-fit rounded-full bg-gres-blue px-5 py-1.5 text-sm font-bold text-white shadow-md">
+              <div className="relative z-10 mx-auto -mt-5 w-fit rounded-full bg-gres-blue px-5 py-1.5 text-sm font-bold text-white shadow-md">
                 Buffy 🦬
               </div>
             </div>
