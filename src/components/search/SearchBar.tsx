@@ -96,7 +96,7 @@ export function SearchBar({ chapters }: SearchBarProps) {
           onFocus={() => setFocused(true)}
           onBlur={() => setTimeout(() => setFocused(false), 200)}
           placeholder="Zoek een begrip, paragraaf of leerdoel..."
-          className="w-full rounded-2xl border border-gres-blue/15 bg-white/90 dark:bg-gray-800/90 pl-12 pr-4 py-3.5 text-sm shadow-md backdrop-blur placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gres-blue/30 focus:border-gres-blue/30 transition-all"
+          className="w-full rounded-2xl border border-gres-blue/15 bg-white/90 dark:bg-gray-800/90 pl-12 pr-4 py-3.5 text-sm shadow-md backdrop-blur placeholder:text-muted-foreground placeholder:text-center focus:outline-none focus:ring-2 focus:ring-gres-blue/30 focus:border-gres-blue/30 transition-all"
         />
       </div>
 
