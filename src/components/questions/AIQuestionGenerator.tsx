@@ -446,17 +446,26 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
                   ? "bg-green-50 dark:bg-green-950/30 border-green-200"
                   : "bg-orange-50 dark:bg-orange-950/30 border-orange-200"
             )}>
-              <p className="text-sm font-medium text-foreground">
-                {question.type === "open"
-                  ? evaluating
-                    ? "Even kijken naar je antwoord... 🧠"
-                    : evaluation
-                      ? evaluation.feedback
-                      : "Goed bezig! Vergelijk je antwoord met het voorbeeld 📝"
-                  : isCorrect
+              {question.type === "open" ? (
+                <div className="text-sm font-medium text-foreground">
+                  <p>
+                    {evaluating
+                      ? "Even kijken naar je antwoord... 🧠"
+                      : evaluation
+                        ? evaluation.feedback
+                        : "Goed bezig! Vergelijk je antwoord met het voorbeeld 📝"}
+                  </p>
+                  {evaluation?.tip && (
+                    <p className="mt-1 font-normal text-foreground/70">💡 {evaluation.tip}</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm font-medium text-foreground">
+                  {isCorrect
                     ? (question.feedbackCorrect || "Goed zo bro! 🔥✅")
                     : (question.feedbackWrong || "Bijna! Maar geen stress 💪")}
-              </p>
+                </p>
+              )}
             </div>
           </div>
 
@@ -469,30 +478,6 @@ export function AIQuestionGenerator({ paragraphId }: AIQuestionGeneratorProps) {
             {/* Open question: AI evaluation */}
             {question.type === "open" ? (
               <div className="space-y-3">
-                {/* Compact score + tip in one line */}
-                {evaluating ? (
-                  <div className="flex items-center gap-3 rounded-xl bg-gres-blue/5 border border-gres-blue/15 px-4 py-3">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gres-blue text-xs animate-bounce">🦎</span>
-                    <p className="text-sm text-muted-foreground">GresGekko beoordeelt je antwoord...</p>
-                  </div>
-                ) : evaluation ? (
-                  <div className={cn(
-                    "rounded-xl px-4 py-3 border",
-                    evaluation.score === "goed" && "bg-green-100/80 border-green-200",
-                    evaluation.score === "deels" && "bg-yellow-100/80 border-yellow-200",
-                    evaluation.score === "fout" && "bg-orange-100/80 border-orange-200",
-                  )}>
-                    <p className="text-sm">
-                      <span className="font-bold">
-                        {evaluation.score === "goed" ? "✅ Helemaal goed!" : evaluation.score === "deels" ? "🟡 Gedeeltelijk goed" : "❌ Nog niet helemaal"}
-                      </span>
-                      {evaluation.tip && (
-                        <span className="text-foreground/60"> — 💡 {evaluation.tip}</span>
-                      )}
-                    </p>
-                  </div>
-                ) : null}
-
                 {/* Jouw antwoord */}
                 <div className="rounded-lg bg-white dark:bg-gray-800 border border-gres-blue/10 p-3">
                   <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
