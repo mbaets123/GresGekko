@@ -30,7 +30,6 @@ export function Header() {
           </div>
         </Link>
         <div className="flex items-center gap-2">
-          <DarkModeToggle />
           {!isHome && (
             <Link
               href="/"
@@ -39,6 +38,7 @@ export function Header() {
               Hoofdmenu
             </Link>
           )}
+          <DarkModeToggle />
         </div>
       </div>
     </header>

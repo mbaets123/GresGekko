@@ -50,7 +50,7 @@ export const getChapters = unstable_cache(async function _getChapters(): Promise
       .filter((p) => p.chapter_id === ch.id)
       .map((p) => mapParagraph(p, goalsRes.data || [], conceptsRes.data || [])),
   }));
-}, ["chapters-all"], { revalidate: 3600 });
+}, ["chapters-all"], { revalidate: 60 });
 
 /* ---------- Homepage (licht): alleen chapters + paragraph count ---------- */
 
@@ -113,7 +113,7 @@ export const getChapter = unstable_cache(async function _getChapter(chapterId: s
       mapParagraph(p, goalsRes.data || [], conceptsRes.data || [])
     ),
   };
-}, ["chapter"], { revalidate: 3600 });
+}, ["chapter"], { revalidate: 60 });
 
 /* ---------- Paragraaf-pagina: één paragraaf + chapter context ---------- */
 

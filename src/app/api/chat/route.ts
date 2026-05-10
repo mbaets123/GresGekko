@@ -133,7 +133,7 @@ Onthoud: ALLES wat je zegt moet gebaseerd zijn op bovenstaande informatie van pa
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "openai/gpt-4.1-nano",
+        model: "google/gemini-2.5-flash",
         stream: true,
         messages: [
           { role: "system", content: systemPrompt },

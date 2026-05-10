@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { QuestionCard } from "./QuestionCard";
+import { AIQuestionGenerator } from "./AIQuestionGenerator";
 import { cn } from "@/lib/utils";
 import type { Question } from "@/types";
 
@@ -14,9 +15,10 @@ const DIFFICULTY_LABELS = [
 
 interface QuestionSectionProps {
   questions: Question[];
+  paragraphId: string;
 }
 
-export function QuestionSection({ questions }: QuestionSectionProps) {
+export function QuestionSection({ questions, paragraphId }: QuestionSectionProps) {
   const [activeLevel, setActiveLevel] = useState<number | null>(null);
 
   if (questions.length === 0) {
@@ -45,6 +47,7 @@ export function QuestionSection({ questions }: QuestionSectionProps) {
             </div>
           ))}
         </div>
+        <AIQuestionGenerator paragraphId={paragraphId} />
       </section>
     );
   }
@@ -117,6 +120,9 @@ export function QuestionSection({ questions }: QuestionSectionProps) {
           ))}
         </div>
       )}
+
+      {/* AI Question Generator */}
+      <AIQuestionGenerator paragraphId={paragraphId} />
     </section>
   );
 }
