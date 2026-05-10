@@ -85,20 +85,9 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
               </span>
               <div className="h-0.5 w-6 rounded-full bg-gres-yellow" />
             </div>
-            <div className="flex items-center gap-3">
-              <h1 className="font-heading text-2xl tracking-wide text-gres-blue sm:text-3xl">
-                {paragraph.title}
-              </h1>
-              {paragraph.slideUrl && (
-                <a
-                  href={paragraph.slideUrl}
-                  download
-                  className="group inline-flex items-center gap-1.5 rounded-xl border border-gres-yellow/30 bg-gres-yellow/10 px-3 py-1.5 text-xs font-semibold text-gres-blue transition-all hover:border-gres-yellow/50 hover:bg-gres-yellow/20 hover:shadow-sm"
-                >
-                  📥 Slides
-                </a>
-              )}
-            </div>
+            <h1 className="font-heading text-2xl tracking-wide text-gres-blue sm:text-3xl">
+              {paragraph.title}
+            </h1>
           </div>
 
           {/* Leerdoelen & Begrippen balk */}
@@ -194,6 +183,37 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
               <AIBuddyChat paragraphId={paragraphId} paragraphTitle={paragraph.title} />
             </div>
           </section>
+
+          {/* Slides embed */}
+          {paragraph.slideUrl && (
+            <section className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm">
+              <div className="flex items-center justify-between border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
+                <div className="flex items-center gap-2">
+                  <span>📊</span>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                    Slides
+                  </h3>
+                </div>
+                <a
+                  href={paragraph.slideUrl}
+                  download
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-gres-blue/15 bg-white dark:bg-gray-800 px-3 py-1 text-xs font-medium text-gres-blue transition-all hover:shadow-sm hover:border-gres-blue/30"
+                >
+                  📥 Download
+                </a>
+              </div>
+              <div className="p-4">
+                <iframe
+                  className="w-full rounded-xl border-0"
+                  style={{ height: "450px" }}
+                  src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(`https://bio-buffy.vercel.app${paragraph.slideUrl}`)}`}
+                  title={`Slides - ${paragraph.title}`}
+                  loading="lazy"
+                  allowFullScreen
+                />
+              </div>
+            </section>
+          )}
 
           <Separator className="bg-gres-blue/10" />
 
