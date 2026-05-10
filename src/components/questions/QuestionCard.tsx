@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import type { Question } from "@/types";
+
+const DIFFICULTY_LABELS: Record<number, string> = {
+  1: "Reproductie",
+  2: "Toepassen",
+  3: "Nieuwe situaties",
+  4: "Inzicht",
+};
 
 interface QuestionCardProps {
   question: Question;
@@ -47,6 +54,53 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
   }
 
   const stars = "★".repeat(question.difficulty) + "☆".repeat(4 - question.difficulty);
+  const diffLabel = DIFFICULTY_LABELS[question.difficulty] || "";
+
+  // Tooltip state for stars
+  const [starTip, setStarTip] = useState(false);
+  const [starTipVisible, setStarTipVisible] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const starOpenRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const starCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    function onTouch() {
+      setIsTouchDevice(true);
+      window.removeEventListener("touchstart", onTouch);
+    }
+    window.addEventListener("touchstart", onTouch, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onTouch);
+      if (starOpenRef.current) clearTimeout(starOpenRef.current);
+      if (starCloseRef.current) clearTimeout(starCloseRef.current);
+    };
+  }, []);
+
+  const handleStarEnter = useCallback(() => {
+    if (isTouchDevice) return;
+    if (starCloseRef.current) clearTimeout(starCloseRef.current);
+    starOpenRef.current = setTimeout(() => {
+      setStarTip(true);
+      requestAnimationFrame(() => setStarTipVisible(true));
+    }, 120);
+  }, [isTouchDevice]);
+
+  const handleStarLeave = useCallback(() => {
+    if (isTouchDevice) return;
+    if (starOpenRef.current) clearTimeout(starOpenRef.current);
+    setStarTipVisible(false);
+    starCloseRef.current = setTimeout(() => setStarTip(false), 100);
+  }, [isTouchDevice]);
+
+  const handleStarClick = useCallback(() => {
+    if (isTouchDevice) {
+      setStarTip((prev) => {
+        const next = !prev;
+        setStarTipVisible(next);
+        return next;
+      });
+    }
+  }, [isTouchDevice]);
 
   return (
     <div
@@ -62,7 +116,30 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
           Vraag {index + 1}
         </span>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gres-yellow">{stars}</span>
+          <span
+            className="relative inline-flex cursor-pointer text-sm text-gres-yellow"
+            onMouseEnter={handleStarEnter}
+            onMouseLeave={handleStarLeave}
+            onClick={handleStarClick}
+          >
+            {stars}
+            {starTip && (
+              <>
+                {isTouchDevice && (
+                  <div className="fixed inset-0 z-40" onClick={() => { setStarTipVisible(false); setStarTip(false); }} />
+                )}
+                <span
+                  className={cn(
+                    "absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-xl bg-gres-blue px-3 py-2 text-xs font-normal text-white shadow-lg text-center transition-all duration-150",
+                    starTipVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+                  )}
+                >
+                  {diffLabel}
+                  <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gres-blue" />
+                </span>
+              </>
+            )}
+          </span>
           <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
             {question.type === "multiple-choice" && "Meerkeuze"}
             {question.type === "open" && "Open"}
