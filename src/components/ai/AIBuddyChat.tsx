@@ -30,6 +30,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [pendingBubble, setPendingBubble] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -55,6 +56,24 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
 
   function scrollToBottom() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }
+
+  function handleBubbleClick(prompt: string) {
+    if (isLoading) return;
+    // Als er al berichten zijn, vraag bevestiging
+    if (messages.length > 0) {
+      setPendingBubble(prompt);
+      return;
+    }
+    handleSend(prompt, true);
+  }
+
+  function confirmBubble() {
+    if (pendingBubble) {
+      const prompt = pendingBubble;
+      setPendingBubble(null);
+      handleSend(prompt, true);
+    }
   }
 
   async function handleSend(directText?: string, freshStart?: boolean) {
@@ -260,6 +279,29 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
       )}
       </div>
 
+      {/* Bevestigingsdialoog bij bubbel-klik met lopend gesprek */}
+      {pendingBubble && (
+        <div className="border-t border-gres-yellow/30 bg-gres-yellow/10 px-3 py-2">
+          <p className="text-xs text-foreground/80 mb-1.5">
+            Je hebt een lopend gesprek. Opnieuw beginnen?
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={confirmBubble}
+              className="rounded-full bg-gres-blue px-3 py-1 text-[10px] font-medium text-white hover:bg-gres-blue-light transition-colors"
+            >
+              Ja, opnieuw
+            </button>
+            <button
+              onClick={() => setPendingBubble(null)}
+              className="rounded-full border border-gray-200 px-3 py-1 text-[10px] font-medium text-muted-foreground hover:bg-muted transition-colors"
+            >
+              Nee, doorgaan
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Prompt bubbels */}
       <div className="border-t border-gres-blue/10 px-2 pt-1.5 pb-1">
         <div className="flex flex-wrap gap-1">
@@ -275,7 +317,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
           ].map((item) => (
             <button
               key={item.label}
-              onClick={() => handleSend(item.prompt, true)}
+              onClick={() => handleBubbleClick(item.prompt)}
               disabled={isLoading}
               className="group relative inline-flex items-center gap-0.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-0.5 text-[10px] font-medium transition hover:shadow-md hover:border-gray-300 disabled:opacity-50"
             >

@@ -6,7 +6,7 @@
 export const AI_MODEL = "google/gemini-2.5-flash";
 
 export const AI_SETTINGS = {
-  chat: { temperature: 0.6, max_tokens: 400 },
+  chat: { temperature: 0.6, max_tokens: 500 },
   generate: { temperature: 0.85, max_tokens: 600 },
   evaluate: { temperature: 0.3, max_tokens: 250 },
 } as const;

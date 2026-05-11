@@ -30,12 +30,12 @@ type QuestionType = "multiple-choice" | "open" | "fill-in" | "random";
 const BUFFEL_INTROS = [
   "Yo, jij hebt er zin in! 🦬🔥",
   "Lekker bezig bro! 💯",
-  "Sheesh, dooroefenen? Respect! 🔥",
+  "Nice, dooroefenen? Respect! 🔥",
   "Ayo, die motivatie is fire! 🦬",
-  "No cap, jij bent een W-leerling! 💪",
-  "Fr fr, lekker doorknallen! 🧠",
-  "Die grindset bro, love it! 🦬✅",
-  "Jij stopt niet hè? Goated! 🔥",
+  "Jij gaat het goed doen op de toets! 💪",
+  "Lekker doorknallen, love it! 🧠",
+  "Chill dat je dooroefent bro! 🦬✅",
+  "Jij stopt niet hè? Top! 🔥",
 ];
 
 const LEVEL_INFO = [
