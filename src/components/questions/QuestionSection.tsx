@@ -131,7 +131,7 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
           ))}
           {/* AI generator card */}
           <button
-            onClick={() => setAiOpen(true)}
+            onClick={() => { setAiOpen(true); setActiveLevel(null); }}
             className="group relative overflow-hidden rounded-2xl border-2 border-dashed border-gres-yellow/40 bg-gres-yellow/5 p-5 text-center transition-all hover:border-gres-yellow hover:bg-gres-yellow/15 hover:shadow-md"
           >
             <div className="mb-2 text-2xl transition-transform group-hover:scale-110">🦬</div>
@@ -182,7 +182,7 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
         })}
         {/* AI generate button */}
         <button
-          onClick={() => setAiOpen(true)}
+          onClick={() => { setAiOpen(true); setActiveLevel(null); }}
           className={cn(
             "group relative overflow-hidden rounded-full border-2 border-dashed border-gres-yellow/40 px-4 py-2 text-sm font-medium transition-all hover:border-gres-yellow hover:bg-gres-yellow/15 hover:shadow-md",
             aiOpen ? "border-gres-yellow bg-gres-yellow/15 shadow-md" : "bg-gres-yellow/5"
