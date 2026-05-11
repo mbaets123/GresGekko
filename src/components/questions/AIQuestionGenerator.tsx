@@ -172,7 +172,6 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
   useEffect(() => {
     if (startOpen && phase === "idle") {
       startPicking();
-      hasStarted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startOpen]);
