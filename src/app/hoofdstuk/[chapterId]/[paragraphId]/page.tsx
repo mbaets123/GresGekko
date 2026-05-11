@@ -183,40 +183,9 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
             </div>
           </section>
 
-          {/* Slides + Infographic naast elkaar */}
-          <section className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-            {/* Slides */}
-            {paragraph.slideUrl && (
-              <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col">
-                <div className="flex items-center justify-between border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
-                  <div className="flex items-center gap-2">
-                    <span>📊</span>
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                      Slides
-                    </h3>
-                  </div>
-                  <a
-                    href={paragraph.slideUrl}
-                    download
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-gres-blue/15 bg-white dark:bg-gray-800 px-3 py-1 text-xs font-medium text-gres-blue transition-all hover:shadow-sm hover:border-gres-blue/30"
-                  >
-                    📥 Download
-                  </a>
-                </div>
-                <div className="flex-1 p-4">
-                  <iframe
-                    className="w-full h-full rounded-xl border-0"
-                    style={{ minHeight: "400px" }}
-                    src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(`https://bio-buffy.vercel.app${paragraph.slideUrl}`)}`}
-                    title={`Slides - ${paragraph.title}`}
-                    loading="lazy"
-                    allowFullScreen
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Infographic / Samenvatting */}
+          {/* Infographic + Buffy slides download */}
+          <section className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-[3fr_1fr]">
+            {/* Infographic / Samenvatting — 75% */}
             <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col">
               <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
                 <span>🖼️</span>
@@ -241,6 +210,32 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Buffy slides download — 25% */}
+            <div className="overflow-hidden rounded-2xl border-2 border-dashed border-gres-yellow/30 bg-gradient-to-br from-gres-yellow/5 to-gres-blue/5 shadow-sm flex flex-col items-center justify-center p-5 text-center">
+              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-gres-blue text-2xl shadow-md">
+                🦬
+              </div>
+              <p className="text-sm font-bold text-foreground mb-1">
+                Slides van deze les
+              </p>
+              <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                Download de PowerPoint met alle uitleg en plaatjes van deze paragraaf. Handig om te leren voor de toets!
+              </p>
+              {paragraph.slideUrl ? (
+                <a
+                  href={paragraph.slideUrl}
+                  download
+                  className="inline-flex items-center gap-2 rounded-xl bg-gres-blue px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-gres-blue-light hover:shadow-lg active:scale-95"
+                >
+                  📥 Download slides
+                </a>
+              ) : (
+                <span className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">
+                  Binnenkort beschikbaar
+                </span>
+              )}
             </div>
           </section>
 
