@@ -175,7 +175,7 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
               desc={desc}
               count={count}
               isActive={isActive}
-              onClick={() => setActiveLevel(isActive ? null : level)}
+              onClick={() => { setActiveLevel(isActive ? null : level); setAiOpen(false); }}
               disabled={count === 0}
             />
           );
