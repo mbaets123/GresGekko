@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
@@ -165,17 +165,23 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
     setError("");
   }
 
+  // Track whether component has left idle at least once
+  const hasStarted = useRef(false);
+
   // Auto-start in picking mode if triggered externally
   useEffect(() => {
     if (startOpen && phase === "idle") {
       startPicking();
+      hasStarted.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startOpen]);
 
-  // Notify parent when returning to idle
+  // Notify parent when RETURNING to idle (not on initial mount)
   useEffect(() => {
-    if (phase === "idle" && onIdle) {
+    if (phase !== "idle") {
+      hasStarted.current = true;
+    } else if (hasStarted.current && onIdle) {
       onIdle();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
