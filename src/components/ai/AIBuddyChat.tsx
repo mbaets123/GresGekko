@@ -57,11 +57,17 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }
 
-  async function handleSend(directText?: string) {
+  async function handleSend(directText?: string, freshStart?: boolean) {
     const text = (directText || input).trim();
     if (!text || isLoading) return;
+
+    // Abort any in-progress request
+    if (abortRef.current) abortRef.current.abort();
+
     const userMessage: Message = { role: "user", content: text };
-    const newMessages = [...messages, userMessage];
+    const newMessages = freshStart
+      ? [userMessage]
+      : [...messages, userMessage];
     setMessages(newMessages);
     setInput("");
     setIsLoading(true);
@@ -269,7 +275,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
           ].map((item) => (
             <button
               key={item.label}
-              onClick={() => handleSend(item.prompt)}
+              onClick={() => handleSend(item.prompt, true)}
               disabled={isLoading}
               className="group relative inline-flex items-center gap-0.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-0.5 text-[10px] font-medium transition hover:shadow-md hover:border-gray-300 disabled:opacity-50"
             >
