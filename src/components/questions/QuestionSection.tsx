@@ -181,21 +181,27 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
           );
         })}
         {/* AI generate button */}
-        <button
-          onClick={() => { setAiOpen(true); setActiveLevel(null); }}
-          className={cn(
-            "group relative overflow-hidden rounded-full border-2 border-dashed border-gres-yellow/40 px-4 py-2 text-sm font-medium transition-all hover:border-gres-yellow hover:bg-gres-yellow/15 hover:shadow-md",
-            aiOpen ? "border-gres-yellow bg-gres-yellow/15 shadow-md" : "bg-gres-yellow/5"
-          )}
-        >
-          <span className="text-xs mr-1">🦬</span>
-          AI Vraag
-          {aiCount > 0 && (
-            <span className="ml-1.5 rounded-full bg-gres-yellow/30 px-1.5 py-0.5 text-[10px] font-bold">
-              {aiCount}
-            </span>
-          )}
-        </button>
+        <div className="relative group">
+          <button
+            onClick={() => { setAiOpen(true); setActiveLevel(null); }}
+            className={cn(
+              "relative overflow-hidden rounded-full border-2 border-dashed border-gres-yellow/40 px-4 py-2 text-sm font-medium transition-all hover:border-gres-yellow hover:bg-gres-yellow/15 hover:shadow-md",
+              aiOpen ? "border-gres-yellow bg-gres-yellow/15 shadow-md" : "bg-gres-yellow/5"
+            )}
+          >
+            <span className="text-xs mr-1">🦬</span>
+            AI Vraag
+            {aiCount > 0 && (
+              <span className="ml-1.5 rounded-full bg-gres-yellow/30 px-1.5 py-0.5 text-[10px] font-bold">
+                {aiCount}
+              </span>
+            )}
+          </button>
+          <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-xl bg-gres-blue px-3 py-2 text-xs font-normal text-white opacity-0 shadow-lg transition-all duration-150 group-hover:opacity-100 text-center">
+            Oneindig veel vragen met feedback
+            <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gres-blue" />
+          </span>
+        </div>
         {/* Progress bar — fills remaining width, color changes with progress */}
         {(() => {
           const pct = questions.length > 0 ? answeredIds.size / questions.length : 0;
