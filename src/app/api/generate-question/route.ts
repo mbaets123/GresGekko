@@ -1,12 +1,19 @@
 import { NextRequest } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 import { isRateLimited } from "@/lib/rate-limit";
+import { AI_MODEL, AI_SETTINGS, TRANSCRIPT_LIMIT, RATE_LIMITS, requireApiKey, logUsage } from "@/lib/ai-config";
 
 /* ---------- POST handler ---------- */
 
 export async function POST(req: NextRequest) {
+  // API key check
+  let apiKey: string;
+  try { apiKey = requireApiKey(); } catch {
+    return Response.json({ error: "AI is niet geconfigureerd." }, { status: 503 });
+  }
+
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (isRateLimited(ip, "generate", 15, 60_000)) {
+  if (isRateLimited(ip, "generate", RATE_LIMITS.generate.limit, RATE_LIMITS.generate.windowMs)) {
     return Response.json(
       { error: "Te veel verzoeken. Wacht even en probeer het opnieuw." },
       { status: 429 }
@@ -20,7 +27,7 @@ export async function POST(req: NextRequest) {
   const validTypes = ["multiple-choice", "open", "fill-in"];
   const questionType = validTypes.includes(body.questionType) ? body.questionType : "multiple-choice";
   const previousQuestions: string[] = Array.isArray(body.previousQuestions)
-    ? body.previousQuestions.slice(-10)
+    ? body.previousQuestions.slice(-5).map((q: unknown) => typeof q === "string" ? q.slice(0, 150) : "")
     : [];
 
   if (!paragraphId || !difficulty) {
@@ -110,7 +117,7 @@ KERNBEGRIPPEN:
 ${conceptsText}
 
 TRANSCRIPT (samenvatting lesstof):
-${paragraph.transcript.slice(0, 3000)}
+${paragraph.transcript.slice(0, TRANSCRIPT_LIMIT)}
 
 REGELS:
 - De vraag MOET gebaseerd zijn op bovenstaande lesstof
@@ -140,11 +147,13 @@ Voor open:
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
+          model: AI_MODEL,
+          temperature: AI_SETTINGS.generate.temperature,
+          max_tokens: AI_SETTINGS.generate.max_tokens,
           response_format: { type: "json_object" },
           messages: [
             { role: "system", content: systemPrompt },
@@ -200,6 +209,14 @@ Voor open:
       console.error("[generate-question] Missing fields:", JSON.stringify(question));
       return Response.json({ error: "Ongeldige vraag ontvangen." }, { status: 500 });
     }
+
+    // Fire-and-forget analytics
+    logUsage(supabaseServer, {
+      route: "generate",
+      paragraph_id: paragraphId,
+      difficulty,
+      question_type: question.type,
+    });
 
     return Response.json({ question });
   } catch (err) {

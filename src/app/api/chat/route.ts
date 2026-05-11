@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 import { isRateLimited } from "@/lib/rate-limit";
+import { AI_MODEL, AI_SETTINGS, TRANSCRIPT_LIMIT, RATE_LIMITS, requireApiKey, logUsage } from "@/lib/ai-config";
 
 /* ---------- Input validation ---------- */
 const MAX_MESSAGE_LENGTH = 500;
@@ -22,9 +23,15 @@ function sanitizeMessages(raw: unknown): { role: string; content: string }[] | n
 }
 
 export async function POST(req: NextRequest) {
+  // API key check
+  let apiKey: string;
+  try { apiKey = requireApiKey(); } catch {
+    return Response.json({ error: "AI is niet geconfigureerd." }, { status: 503 });
+  }
+
   // Rate limiting
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (isRateLimited(ip, "chat", 30, 60_000)) {
+  if (isRateLimited(ip, "chat", RATE_LIMITS.chat.limit, RATE_LIMITS.chat.windowMs)) {
     return Response.json(
       { error: "Je stuurt te veel berichten. Wacht even en probeer het opnieuw." },
       { status: 429 }
@@ -107,7 +114,7 @@ KERNBEGRIPPEN MET BETEKENIS:
 ${conceptsText}
 
 TRANSCRIPT VAN DE VIDEOLES:
-${paragraph.transcript}
+${paragraph.transcript.slice(0, TRANSCRIPT_LIMIT)}
 
 Onthoud: ALLES wat je zegt moet gebaseerd zijn op bovenstaande informatie van paragraaf "${paragraph.title}". Ga er NOOIT buiten. Als je twijfelt, verwijs terug naar de lesstof.`;
 
@@ -116,27 +123,32 @@ Onthoud: ALLES wat je zegt moet gebaseerd zijn op bovenstaande informatie van pa
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: AI_MODEL,
         stream: true,
+        temperature: AI_SETTINGS.chat.temperature,
+        max_tokens: AI_SETTINGS.chat.max_tokens,
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages.slice(-20),
+          ...messages.slice(-MAX_MESSAGES),
         ],
       }),
     }
   );
 
   if (!response.ok) {
-    const err = await response.text();
+    console.error("[chat] OpenRouter error:", response.status);
     return Response.json(
       { error: "AI is even niet beschikbaar. Probeer het straks opnieuw." },
       { status: 500 }
     );
   }
+
+  // Fire-and-forget analytics
+  logUsage(supabaseServer, { route: "chat", paragraph_id: paragraphId });
 
   return new Response(response.body, {
     headers: {

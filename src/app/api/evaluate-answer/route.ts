@@ -1,10 +1,17 @@
 import { NextRequest } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 import { isRateLimited } from "@/lib/rate-limit";
+import { AI_MODEL, AI_SETTINGS, RATE_LIMITS, requireApiKey, logUsage } from "@/lib/ai-config";
 
 export async function POST(req: NextRequest) {
+  // API key check
+  let apiKey: string;
+  try { apiKey = requireApiKey(); } catch {
+    return Response.json({ error: "AI is niet geconfigureerd." }, { status: 503 });
+  }
+
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (isRateLimited(ip, "evaluate", 15, 60_000)) {
+  if (isRateLimited(ip, "evaluate", RATE_LIMITS.evaluate.limit, RATE_LIMITS.evaluate.windowMs)) {
     return Response.json(
       { error: "Te veel verzoeken. Wacht even." },
       { status: 429 }
@@ -12,9 +19,9 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const question = typeof body.question === "string" ? body.question : null;
-  const correctAnswer = typeof body.correctAnswer === "string" ? body.correctAnswer : null;
-  const studentAnswer = typeof body.studentAnswer === "string" ? body.studentAnswer : null;
+  const question = typeof body.question === "string" ? body.question.slice(0, 500) : null;
+  const correctAnswer = typeof body.correctAnswer === "string" ? body.correctAnswer.slice(0, 500) : null;
+  const studentAnswer = typeof body.studentAnswer === "string" ? body.studentAnswer.slice(0, 1000) : null;
   const paragraphId = typeof body.paragraphId === "string" ? body.paragraphId : null;
 
   if (!question || !correctAnswer || !studentAnswer) {
@@ -41,19 +48,12 @@ export async function POST(req: NextRequest) {
         .map((c) => c.definition ? `${c.term}: ${c.definition}` : c.term)
         .join("; ");
 
-      lessonContext = `
-LESSTOF CONTEXT (gebruik dit om te beoordelen of het antwoord inhoudelijk klopt):
-Paragraaf: "${paragraph.title}"
-Kernbegrippen: ${conceptsText}
-Samenvatting lesstof: ${paragraph.transcript.slice(0, 1500)}`;
+      lessonContext = `\nLESSTOF CONTEXT (gebruik dit om te beoordelen of het antwoord inhoudelijk klopt):\nParagraaf: "${paragraph.title}"\nKernbegrippen: ${conceptsText}\nSamenvatting lesstof: ${paragraph.transcript.slice(0, 1500)}`;
     }
   }
 
+  // System prompt bevat alleen instructies — geen user input
   const systemPrompt = `Je bent een biologiedocent die het antwoord van een vmbo-havo leerling beoordeelt.
-
-VRAAG: "${question}"
-VOORBEELDANTWOORD: "${correctAnswer}"
-ANTWOORD VAN DE LEERLING: "${studentAnswer}"
 ${lessonContext}
 
 Beoordeel het antwoord van de leerling. Geef je antwoord UITSLUITEND als JSON:
@@ -73,21 +73,28 @@ Regels:
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
+          model: AI_MODEL,
+          temperature: AI_SETTINGS.evaluate.temperature,
+          max_tokens: AI_SETTINGS.evaluate.max_tokens,
           response_format: { type: "json_object" },
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: "Beoordeel dit antwoord." },
+            // User input in apart message — voorkomt prompt injection via system prompt
+            {
+              role: "user",
+              content: `VRAAG: ${question}\nVOORBEELDANTWOORD: ${correctAnswer}\nANTWOORD VAN DE LEERLING: ${studentAnswer}\n\nBeoordeel dit antwoord.`,
+            },
           ],
         }),
       }
     );
 
     if (!response.ok) {
+      console.error("[evaluate-answer] OpenRouter error:", response.status);
       return Response.json(
         { error: "AI is even niet beschikbaar." },
         { status: 500 }
@@ -103,10 +110,31 @@ Regels:
 
     const cleaned = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-    const evaluation = JSON.parse(jsonMatch ? jsonMatch[0] : cleaned);
+
+    let evaluation;
+    try {
+      evaluation = JSON.parse(jsonMatch ? jsonMatch[0] : cleaned);
+    } catch (parseErr) {
+      console.error("[evaluate-answer] JSON parse error:", parseErr, "Content:", cleaned.slice(0, 300));
+      return Response.json({ error: "Ongeldige beoordeling ontvangen. Probeer het opnieuw." }, { status: 500 });
+    }
+
+    // Validate required fields
+    if (!evaluation.score || !evaluation.feedback) {
+      console.error("[evaluate-answer] Missing fields:", JSON.stringify(evaluation));
+      return Response.json({ error: "Ongeldige beoordeling ontvangen." }, { status: 500 });
+    }
+
+    // Fire-and-forget analytics
+    logUsage(supabaseServer, {
+      route: "evaluate",
+      paragraph_id: paragraphId || "",
+      score: evaluation.score,
+    });
 
     return Response.json({ evaluation });
-  } catch {
+  } catch (err) {
+    console.error("[evaluate-answer] Unexpected error:", err);
     return Response.json(
       { error: "Beoordeling mislukt." },
       { status: 500 }
