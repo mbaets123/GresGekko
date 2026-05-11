@@ -218,10 +218,10 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
                 🦬
               </div>
               <p className="text-sm font-bold text-foreground mb-1">
-                Slides van deze les
+                PowerPoint van de les
               </p>
               <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                Download de PowerPoint met alle uitleg en plaatjes van deze paragraaf. Handig om te leren voor de toets!
+                Dit is de PowerPoint die de docent tijdens de les heeft uitgelegd. Download hem om de stof op je eigen tempo te bestuderen!
               </p>
               {paragraph.slideUrl ? (
                 <a
