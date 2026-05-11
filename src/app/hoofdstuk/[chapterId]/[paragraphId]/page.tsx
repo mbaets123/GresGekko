@@ -213,29 +213,34 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
             </div>
 
             {/* Buffy slides download — 25% */}
-            <div className="overflow-hidden rounded-2xl border-2 border-dashed border-gres-yellow/30 bg-gradient-to-br from-gres-yellow/5 to-gres-blue/5 shadow-sm flex flex-col items-center justify-center p-5 text-center">
-              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-gres-blue text-2xl shadow-md">
-                🦬
+            <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col">
+              <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
+                <span>📊</span>
+                <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                  Slides
+                </h3>
               </div>
-              <p className="text-sm font-bold text-foreground mb-1">
-                PowerPoint van de les
-              </p>
-              <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                Dit is de PowerPoint die de docent tijdens de les heeft uitgelegd. Download hem om de stof op je eigen tempo te bestuderen!
-              </p>
-              {paragraph.slideUrl ? (
-                <a
-                  href={paragraph.slideUrl}
-                  download
-                  className="inline-flex items-center gap-2 rounded-xl bg-gres-blue px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-gres-blue-light hover:shadow-lg active:scale-95"
-                >
-                  📥 Download slides
-                </a>
-              ) : (
-                <span className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">
-                  Binnenkort beschikbaar
-                </span>
-              )}
+              <div className="flex-1 flex flex-col items-center justify-center p-5 text-center">
+                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-gres-yellow/20 to-green-400/10 text-2xl shadow-md">
+                  🦬
+                </div>
+                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                  Dit is de PowerPoint die de docent tijdens de les heeft uitgelegd. Download hem om de stof op je eigen tempo te bestuderen!
+                </p>
+                {paragraph.slideUrl ? (
+                  <a
+                    href={paragraph.slideUrl}
+                    download
+                    className="inline-flex items-center gap-2 rounded-xl bg-gres-blue px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-gres-blue-light hover:shadow-lg active:scale-95"
+                  >
+                    📥 Download slides
+                  </a>
+                ) : (
+                  <span className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">
+                    Binnenkort beschikbaar
+                  </span>
+                )}
+              </div>
             </div>
           </section>
 
