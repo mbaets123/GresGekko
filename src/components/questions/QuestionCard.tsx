@@ -102,8 +102,8 @@ export function QuestionCard({ question, index, onAnswered }: QuestionCardProps)
     <div
       className={cn(
         "rounded-2xl border bg-card p-5 transition-all",
-        submitted && isCorrect && "border-green-300 bg-green-50/50",
-        submitted && !isCorrect && "border-orange-300 bg-orange-50/50"
+        submitted && isCorrect && "border-green-300 bg-green-50/50 dark:bg-green-950/30 dark:border-green-800",
+        submitted && !isCorrect && "border-orange-300 bg-orange-50/50 dark:bg-orange-950/30 dark:border-orange-800"
       )}
     >
       {/* Header */}
@@ -232,8 +232,8 @@ export function QuestionCard({ question, index, onAnswered }: QuestionCardProps)
               className={cn(
                 "rounded-xl p-4",
                 isCorrect
-                  ? "bg-green-100/80 border border-green-200"
-                  : "bg-orange-100/80 border border-orange-200"
+                  ? "bg-green-100/80 border border-green-200 dark:bg-green-950/40 dark:border-green-800"
+                  : "bg-orange-100/80 border border-orange-200 dark:bg-orange-950/40 dark:border-orange-800"
               )}
             >
               <div className="flex items-center gap-2 mb-1">
@@ -261,12 +261,14 @@ export function QuestionCard({ question, index, onAnswered }: QuestionCardProps)
             </p>
           </div>
 
-          <Button
-            onClick={handleRetry}
-            className="bg-gres-blue hover:bg-gres-blue-light text-white"
-          >
-            Opnieuw proberen
-          </Button>
+          {isCorrect && (
+            <Button
+              onClick={handleRetry}
+              className="bg-gres-blue hover:bg-gres-blue-light text-white"
+            >
+              Opnieuw proberen
+            </Button>
+          )}
         </div>
       )}
     </div>

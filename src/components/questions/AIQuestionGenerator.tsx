@@ -510,8 +510,8 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
                   className={cn(
                     "rounded-xl px-4 py-3 border",
                     isCorrect
-                      ? "bg-green-100/80 border-green-200"
-                      : "bg-orange-100/80 border-orange-200"
+                      ? "bg-green-100/80 border-green-200 dark:bg-green-950/40 dark:border-green-800"
+                      : "bg-orange-100/80 border-orange-200 dark:bg-orange-950/40 dark:border-orange-800"
                   )}
                 >
                   <p className="text-sm">

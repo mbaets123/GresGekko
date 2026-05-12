@@ -113,7 +113,7 @@ export default async function HomePage() {
                   href="https://www.youtube.com/channel/UCV-_BhPt2wrBQYzAowlRMCA"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border-2 border-green-400/40 bg-green-50 px-4 py-2 text-xs font-semibold text-green-700 transition-all hover:border-green-500/50 hover:shadow-sm"
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-green-400/40 bg-green-50 dark:bg-green-950/30 dark:border-green-700/50 px-4 py-2 text-xs font-semibold text-green-700 dark:text-green-400 transition-all hover:border-green-500/50 hover:shadow-sm"
                 >
                   ▶️ Joost op YouTube
                 </a>
@@ -121,7 +121,7 @@ export default async function HomePage() {
                   href="https://www.vo-content.nl/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border-2 border-orange-300/50 bg-orange-50 px-4 py-2 text-xs font-semibold text-orange-700 transition-all hover:border-orange-400/60 hover:shadow-sm"
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-orange-300/50 bg-orange-50 dark:bg-orange-950/30 dark:border-orange-700/50 px-4 py-2 text-xs font-semibold text-orange-700 dark:text-orange-400 transition-all hover:border-orange-400/60 hover:shadow-sm"
                 >
                   📚 VO-content
                 </a>

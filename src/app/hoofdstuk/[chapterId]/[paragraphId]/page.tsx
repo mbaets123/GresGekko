@@ -67,9 +67,9 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
                   ) : (
                     <Link
                       href={`/hoofdstuk/${chapter.id}`}
-                      className="group inline-flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-xs transition-all hover:shadow-sm hover:border-green-300"
+                      className="group inline-flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 px-3 py-2 text-xs transition-all hover:shadow-sm hover:border-green-300"
                     >
-                      <span className="font-semibold text-green-700 group-hover:text-green-800">
+                      <span className="font-semibold text-green-700 dark:text-green-400 group-hover:text-green-800 dark:group-hover:text-green-300">
                         Terug naar overzicht
                       </span>
                       <span>✅</span>
@@ -79,7 +79,7 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
               );
             })()}
             <div className="mb-1 flex items-center gap-2">
-              <span className="font-heading text-sm text-gres-yellow">
+              <span className="font-heading text-2xl text-gres-yellow">
                 {chapter.order}.{paragraph.order}
               </span>
               <div className="h-0.5 w-6 rounded-full bg-gres-yellow" />
@@ -89,160 +89,163 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
             </h1>
           </div>
 
-          {/* Leerdoelen & Begrippen balk */}
-          <section className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-gres-yellow/10">
-            <div className="grid gap-0 md:grid-cols-2">
-              <div className="p-6">
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gres-blue text-xs text-white">
-                    🎯
-                  </span>
-                  <h2 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                    Deze les leer je..
-                  </h2>
-                </div>
-                <ul className="space-y-2.5">
-                  {paragraph.learningGoals.map((goal, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-2.5 text-sm leading-relaxed"
-                    >
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gres-yellow/30 text-xs text-gres-blue font-bold">
-                        ✓
-                      </span>
-                      <HighlightText text={goal} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="border-t border-gres-yellow/20 p-6 md:border-l md:border-t-0">
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gres-yellow text-xs">
-                    📚
-                  </span>
-                  <h2 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                    Kernbegrippen
-                  </h2>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {paragraph.concepts.map((concept, i) => (
-                    <ConceptChip key={i} term={concept.term} definition={concept.definition} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
+          {/* Twee-koloms hoofdlayout */}
+          <div className="grid gap-6 lg:grid-cols-[2fr_1fr] lg:items-start">
 
-          {/* Video + AI Buddy sectie — video 2/3, AI 1/3 */}
-          <section className="grid gap-4 sm:gap-6 lg:grid-cols-[2fr_1fr]">
-            {/* Video - large */}
-            <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm">
-              <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
-                <span>🎬</span>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                  Videoles
-                </h3>
+            {/* Linkerkolom: leerdoelen + video + infographic */}
+            <div className="space-y-6">
+
+              {/* Leerdoelen & Begrippen */}
+              <section className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-gres-yellow/10">
+                <div className="grid gap-0 md:grid-cols-2">
+                  <div className="p-5">
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gres-blue text-xs text-white">
+                        🎯
+                      </span>
+                      <h2 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                        Deze les leer je..
+                      </h2>
+                    </div>
+                    <ul className="space-y-2">
+                      {paragraph.learningGoals.map((goal, i) => (
+                        <li key={i} className="flex items-start gap-2.5 text-sm leading-relaxed">
+                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gres-yellow/30 text-xs text-gres-blue font-bold">
+                            ✓
+                          </span>
+                          <HighlightText text={goal} />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="border-t border-gres-yellow/20 p-5 md:border-l md:border-t-0">
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gres-yellow text-xs">
+                        📚
+                      </span>
+                      <h2 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                        Kernbegrippen
+                      </h2>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {paragraph.concepts.map((concept, i) => (
+                        <ConceptChip key={i} term={concept.term} definition={concept.definition} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Video */}
+              <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm">
+                <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
+                  <span>🎬</span>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                    Videoles
+                  </h3>
+                </div>
+                <div className="p-4">
+                  {paragraph.videoUrl ? (
+                    <iframe
+                      className="aspect-video w-full rounded-xl"
+                      src={`https://www.youtube.com/embed/${paragraph.videoUrl.split("v=")[1]?.split("&")[0]}`}
+                      title={paragraph.title}
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <div className="aspect-video rounded-xl bg-gradient-to-br from-gres-blue/10 to-gres-blue/5 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gres-blue/10">
+                          <span className="text-3xl">▶️</span>
+                        </div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Video wordt later toegevoegd
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="p-4">
-                {paragraph.videoUrl ? (
-                  <iframe
-                    className="aspect-video w-full rounded-xl"
-                    src={`https://www.youtube.com/embed/${paragraph.videoUrl.split("v=")[1]?.split("&")[0]}`}
-                    title={paragraph.title}
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                ) : (
-                  <div className="aspect-video rounded-xl bg-gradient-to-br from-gres-blue/10 to-gres-blue/5 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gres-blue/10">
-                        <span className="text-3xl">▶️</span>
+
+              {/* Infographic */}
+              <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm">
+                <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
+                  <span>🖼️</span>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                    Samenvatting
+                  </h3>
+                </div>
+                <div className="p-4 flex items-center justify-center">
+                  {paragraph.infographicUrl ? (
+                    <ImageLightbox
+                      src={paragraph.infographicUrl}
+                      alt={`Samenvatting ${paragraph.title}`}
+                    />
+                  ) : (
+                    <div className="text-center py-10">
+                      <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gres-yellow/20">
+                        <span className="text-3xl">🖼️</span>
                       </div>
                       <p className="text-sm font-medium text-muted-foreground">
-                        Video wordt later toegevoegd
+                        Samenvatting wordt later toegevoegd
                       </p>
                     </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* AI Buddy - responsive height */}
-            <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col h-[350px] sm:h-[400px] lg:h-[500px]">
-              <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-4 py-3">
-                <span>🦬</span>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                  Buffy
-                </h3>
-                <span className="ml-auto rounded-full bg-gres-yellow/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gres-blue">
-                  Beta
-                </span>
-              </div>
-              <AIBuddyChat paragraphId={paragraphId} paragraphTitle={paragraph.title} />
-            </div>
-          </section>
-
-          {/* Infographic + Buffy slides download */}
-          <section className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-[3fr_1fr]">
-            {/* Infographic / Samenvatting — 75% */}
-            <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col">
-              <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
-                <span>🖼️</span>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                  Samenvatting
-                </h3>
-              </div>
-              <div className="flex-1 p-4 flex items-center justify-center">
-                {paragraph.infographicUrl ? (
-                  <ImageLightbox
-                    src={paragraph.infographicUrl}
-                    alt={`Samenvatting ${paragraph.title}`}
-                  />
-                ) : (
-                  <div className="text-center py-10">
-                    <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gres-yellow/20">
-                      <span className="text-3xl">🖼️</span>
-                    </div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Samenvatting wordt later toegevoegd
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Buffy slides download — 25% */}
-            <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col">
-              <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-5 py-3">
-                <span>📊</span>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                  Slides
-                </h3>
-              </div>
-              <div className="flex-1 flex flex-col items-center justify-center p-5 text-center">
-                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-gres-yellow/20 to-green-400/10 text-2xl shadow-md">
-                  🦬
+                  )}
                 </div>
-                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                  Dit is de PowerPoint die de docent tijdens de les heeft uitgelegd. Download hem om de stof op je eigen tempo te bestuderen!
-                </p>
-                {paragraph.slideUrl ? (
-                  <a
-                    href={paragraph.slideUrl}
-                    download
-                    className="inline-flex items-center gap-2 rounded-xl bg-gres-blue px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-gres-blue-light hover:shadow-lg active:scale-95"
-                  >
-                    📥 Download slides
-                  </a>
-                ) : (
-                  <span className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">
-                    Binnenkort beschikbaar
-                  </span>
-                )}
               </div>
             </div>
-          </section>
+
+            {/* Rechterkolom: AI chat + slides */}
+            <div className="flex flex-col gap-4 lg:sticky lg:top-4">
+
+              {/* AI Buddy */}
+              <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col h-[600px] lg:h-[700px]">
+                <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-4 py-3">
+                  <span>🦬</span>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                    Buffy
+                  </h3>
+                  <span className="ml-auto rounded-full bg-gres-yellow/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gres-blue">
+                    Beta
+                  </span>
+                </div>
+                <AIBuddyChat paragraphId={paragraphId} paragraphTitle={paragraph.title} />
+              </div>
+
+              {/* Slides */}
+              <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm">
+                <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-4 py-3">
+                  <span>📊</span>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                    Slides
+                  </h3>
+                </div>
+                <div className="flex items-center gap-4 p-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gres-yellow/20 to-green-400/10 text-xl shadow-md">
+                    🦬
+                  </div>
+                  <p className="flex-1 text-xs text-muted-foreground leading-relaxed">
+                    Download de PowerPoint van deze les om de stof op je eigen tempo te bestuderen.
+                  </p>
+                  {paragraph.slideUrl ? (
+                    <a
+                      href={paragraph.slideUrl}
+                      download
+                      className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-gres-blue px-3 py-2 text-xs font-semibold text-white shadow-md transition-all hover:bg-gres-blue-light hover:shadow-lg active:scale-95"
+                    >
+                      📥 Download
+                    </a>
+                  ) : (
+                    <span className="shrink-0 rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground">
+                      Binnenkort
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
 
           <Separator className="bg-gres-blue/10" />
 
