@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getChapter } from "@/lib/data";
+import { getChapterColors } from "@/lib/chapter-colors";
 
 interface ChapterPageProps {
   params: Promise<{ chapterId: string }>;
@@ -13,6 +14,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
 
   if (!chapter) return notFound();
 
+  const colors = getChapterColors(chapter.order);
+
   return (
     <>
       {/* Chapter hero */}
@@ -21,7 +24,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url('/chapters/${chapter.order}.jpg')` }}
         />
-        <div className="absolute inset-0 bg-gres-blue/75" />
+        <div className={`absolute inset-0 ${colors.banner}`} />
         <div className="absolute right-10 top-6 text-[120px] opacity-10 select-none">
           {chapter.icon}
         </div>

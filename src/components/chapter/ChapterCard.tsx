@@ -1,22 +1,14 @@
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { getChapterColors } from "@/lib/chapter-colors";
 import type { Chapter } from "@/types";
-
-const chapterColors = [
-  { bg: "from-blue-500/10 to-cyan-500/10", border: "hover:border-blue-400/40", icon: "bg-blue-500/15", overlay: "bg-blue-800/60", overlayHover: "group-hover:bg-blue-800/50" },
-  { bg: "from-orange-500/10 to-red-500/10", border: "hover:border-orange-400/40", icon: "bg-orange-500/15", overlay: "bg-orange-800/60", overlayHover: "group-hover:bg-orange-800/50" },
-  { bg: "from-green-500/10 to-emerald-500/10", border: "hover:border-green-400/40", icon: "bg-green-500/15", overlay: "bg-green-800/60", overlayHover: "group-hover:bg-green-800/50" },
-  { bg: "from-red-500/10 to-pink-500/10", border: "hover:border-red-400/40", icon: "bg-red-500/15", overlay: "bg-red-800/60", overlayHover: "group-hover:bg-red-800/50" },
-  { bg: "from-purple-500/10 to-violet-500/10", border: "hover:border-purple-400/40", icon: "bg-purple-500/15", overlay: "bg-purple-800/60", overlayHover: "group-hover:bg-purple-800/50" },
-  { bg: "from-indigo-500/10 to-blue-500/10", border: "hover:border-indigo-400/40", icon: "bg-indigo-500/15", overlay: "bg-indigo-800/60", overlayHover: "group-hover:bg-indigo-800/50" },
-];
 
 interface ChapterCardProps {
   chapter: Chapter;
 }
 
 export function ChapterCard({ chapter }: ChapterCardProps) {
-  const colors = chapterColors[(chapter.order - 1) % chapterColors.length];
+  const colors = getChapterColors(chapter.order);
 
   return (
     <Link href={`/hoofdstuk/${chapter.id}`}>
