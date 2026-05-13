@@ -30,15 +30,15 @@ export function ChapterToetsSection({
         {questions.length > 0 && (
           <button
             onClick={() => setOpen(true)}
-            className="group relative h-full overflow-hidden rounded-2xl border border-[#E94E5B]/25 bg-[#E94E5B]/[0.08] text-left transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#E94E5B]/40"
+            className="group relative h-full overflow-hidden rounded-2xl border border-[#E94E5B]/25 bg-[#E94E5B]/[0.05] text-left transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#E94E5B]/40 hover:bg-[#E94E5B]/[0.08]"
           >
             {/* Top colour bar */}
             <div className="absolute top-0 left-0 h-1 w-full bg-[#E94E5B] opacity-0 transition-opacity group-hover:opacity-100" />
 
             <CardHeader>
               <div className="flex items-center gap-3 mb-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E94E5B]/15 text-xl">
-                  📝
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E94E5B]/15 font-heading text-sm text-[#E94E5B]">
+                  🦬
                 </div>
                 <span className="rounded-full bg-[#E94E5B]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E94E5B]">
                   Toets
