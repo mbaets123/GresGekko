@@ -53,7 +53,11 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
           <h2 className="text-lg font-semibold">Paragrafen</h2>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ChapterToetsSection
+          questions={chapterQuestions}
+          chapterTitle={`Hoofdstuk ${chapter.order}: ${chapter.title}`}
+          paragraphs={chapter.paragraphs.map(p => ({ id: p.id, title: `${chapter.order}.${p.order} ${p.title}` }))}
+        >
           {chapter.paragraphs.map((paragraph) => (
             <Link
               key={paragraph.id}
@@ -68,9 +72,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
               >
                 <div
                   className={`absolute top-0 left-0 h-1 w-full transition-opacity opacity-0 group-hover:opacity-100 ${
-                    paragraph.isExtra
-                      ? "bg-gres-blue"
-                      : "bg-gres-yellow"
+                    paragraph.isExtra ? "bg-gres-blue" : "bg-gres-yellow"
                   }`}
                 />
                 <CardHeader>
@@ -106,14 +108,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
               </Card>
             </Link>
           ))}
-        </div>
+        </ChapterToetsSection>
       </section>
-
-      <ChapterToetsSection
-        questions={chapterQuestions}
-        chapterTitle={`Hoofdstuk ${chapter.order}: ${chapter.title}`}
-        paragraphs={chapter.paragraphs.map(p => ({ id: p.id, title: `${chapter.order}.${p.order} ${p.title}` }))}
-      />
     </>
   );
 }
