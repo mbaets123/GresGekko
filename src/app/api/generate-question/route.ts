@@ -60,6 +60,23 @@ export async function POST(req: NextRequest) {
     .eq("paragraph_id", paragraphId)
     .order("order");
 
+  // Fetch a source question from the database to base the variation on
+  const { data: dbQuestions } = await supabaseServer
+    .from("questions")
+    .select("question, answer, type, options")
+    .eq("paragraph_id", paragraphId)
+    .eq("difficulty", difficulty);
+
+  // Pick a random source question, avoiding ones similar to previousQuestions
+  let sourceQuestion: { question: string; answer: string; type: string; options: string[] | null } | null = null;
+  if (dbQuestions && dbQuestions.length > 0) {
+    const filtered = dbQuestions.filter(
+      (q) => !previousQuestions.some((prev) => prev.slice(0, 60) === q.question.slice(0, 60))
+    );
+    const pool = filtered.length > 0 ? filtered : dbQuestions;
+    sourceQuestion = pool[Math.floor(Math.random() * pool.length)];
+  }
+
   const conceptsText = (concepts || [])
     .map((c) => c.definition ? `- ${c.term}: ${c.definition}` : `- ${c.term}`)
     .join("\n");
@@ -102,10 +119,24 @@ NIET DOEN: simpele feitenvragen of directe toepassing — de leerling moet echt 
     ? "De uitleg moet helder en leerzaam zijn (3-5 zinnen). Leg het verband uit dat de leerling moest zien."
     : "De uitleg moet kort, helder en leerzaam zijn (2-3 zinnen).";
 
+  const sourceBlock = sourceQuestion
+    ? `BASISVRAAG (gebruik dit als inhoudelijke basis, maar maak een VARIATIE):
+Vraag: "${sourceQuestion.question}"
+Antwoord: "${sourceQuestion.answer}"${sourceQuestion.options ? `\nOpties: ${JSON.stringify(sourceQuestion.options)}` : ""}
+
+VARIATIE-INSTRUCTIES:
+- Gebruik hetzelfde leerdoel en hetzelfde biologische concept als de basisvraag
+- Verander de context: gebruik een andere naam, situatie, locatie of invalshoek
+- Bij multiple-choice: verzin nieuwe foute opties, verander de volgorde van de opties
+- Bij open: vraag naar hetzelfde concept maar formuleer de vraag anders
+- De variatie moet DUIDELIJK anders zijn dan de basisvraag, maar over exact hetzelfde gaan`
+    : `OPDRACHT: Genereer een vraag op basis van de lesstof hieronder.`;
+
   const systemPrompt = `Je bent een biologiedocent die oefenvragen maakt voor vmbo t - havo leerjaar 1.
 
-OPDRACHT: Genereer precies 1 vraag op het onderstaande niveau.
+${sourceBlock}
 
+NIVEAU:
 ${difficultyBlocks[difficulty]}
 
 PARAGRAAF: "${paragraph.title}"
@@ -120,11 +151,10 @@ TRANSCRIPT (samenvatting lesstof):
 ${paragraph.transcript.slice(0, TRANSCRIPT_LIMIT)}
 
 REGELS:
-- De vraag MOET gebaseerd zijn op bovenstaande lesstof
+- De vraag MOET gebaseerd zijn op de lesstof en (indien aanwezig) de basisvraag
 - Maak een vraag van type "${questionType}"
-- Houd je STRIKT aan het beschreven niveau. Een niveau 1 vraag mag NOOIT een situatieschets bevatten. Een niveau 4 vraag MOET de leerling laten redeneren over verbanden.
-- Bedenk een NIEUW scenario of context voor de vraag${previousQuestions.length > 0 ? `\n- Deze vragen zijn al gesteld, stel GEEN vergelijkbare vraag. Kies een ANDER onderwerp/begrip:\n${previousQuestions.map((q) => `  * "${q}"`).join("\n")}` : ""}
-- Bij multiple-choice: geef precies 4 KORTE opties (max 15 woorden per optie), waarvan 1 correct. Baseer de foute opties op veelgemaakte fouten en misconcepties van leerlingen (bijv. verwisseling van begrippen, verkeerde oorzaak-gevolg, halve waarheden). Gebruik GEEN "A.", "B." etc. Het "answer" veld moet EXACT overeenkomen met een van de opties.
+- Houd je STRIKT aan het beschreven niveau. Een niveau 1 vraag mag NOOIT een situatieschets bevatten. Een niveau 4 vraag MOET de leerling laten redeneren over verbanden.${previousQuestions.length > 0 ? `\n- Deze vragen zijn al gesteld, stel GEEN vergelijkbare vraag:\n${previousQuestions.map((q) => `  * "${q}"`).join("\n")}` : ""}
+- Bij multiple-choice: geef precies 4 KORTE opties (max 15 woorden per optie), waarvan 1 correct. Baseer de foute opties op veelgemaakte fouten en misconcepties van leerlingen. Gebruik GEEN "A.", "B." etc. Het "answer" veld moet EXACT overeenkomen met een van de opties.
 - Bij fill-in: maak een zin met ... (drie puntjes) waar het antwoord moet komen. Het antwoord moet 1-3 woorden zijn. Geef in het "answer" veld het meest gangbare woord (zonder lidwoord).
 - Bij open: stel een vraag waar de leerling in eigen woorden moet antwoorden. Geef een volledig voorbeeldantwoord in het "answer" veld.
 - ${explanationLength}
