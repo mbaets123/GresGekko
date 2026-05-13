@@ -72,9 +72,9 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }
 
-  function handleBubbleClick(prompt: string) {
+  function handleBubbleClick(prompt: string, freshStart = false) {
     if (isLoading) return;
-    handleSend(prompt);
+    handleSend(prompt, freshStart);
   }
 
   async function handleSend(directText?: string, freshStart?: boolean) {
@@ -291,21 +291,21 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
       <div className="border-t border-gres-blue/10 px-2 pt-1.5 pb-1 overflow-visible">
         <div className="flex flex-wrap gap-1 overflow-visible">
           {[
-            { emoji: "📋", label: "Samenvatting", color: "text-gres-blue dark:text-gres-blue", prompt: "Geef me een korte samenvatting van deze paragraaf in bullet points", tooltip: "Geeft je een overzichtelijke samenvatting van de les" },
-            { emoji: "🧠", label: "Begrippen", color: "text-green-600 dark:text-green-400", prompt: "Oefen met mij de kernbegrippen van deze paragraaf! Noem steeds één begrip en laat mij de definitie geven.", tooltip: "Oefent de begrippen met je zodat je ze onthoudt" },
-            { emoji: "🎲", label: "Quiz", color: "text-purple-600 dark:text-purple-400", prompt: "Start een quiz over deze paragraaf! Stel me meerdere vragen één voor één en houd mijn score bij.", tooltip: "Start een quiz met score" },
-            { emoji: "💡", label: "Metafoor", color: "text-yellow-600 dark:text-yellow-400", prompt: "Leg de lesstof uit met een metafoor die makkelijk te begrijpen is", tooltip: "Vergelijking die je makkelijk onthoudt" },
-            { emoji: "🌍", label: "Jouw wereld", color: "text-teal-600 dark:text-teal-400", prompt: "Ik wil de lesstof uitgelegd krijgen met een voorbeeld uit mijn eigen wereld. Vraag me eerst kort: welk onderwerp vind ik leuk? (bijv. sport, games, muziek, koken, dieren...) en gebruik dat dan als voorbeeld.", tooltip: "Buffy vraagt wat jij leuk vindt en gebruikt dat als voorbeeld" },
-            { emoji: "❓", label: "Waarom?", color: "text-red-500 dark:text-red-400", prompt: "Waarom is deze lesstof belangrijk? Waar heb ik dit voor nodig?", tooltip: "Waarom moet je dit leren?" },
-            { emoji: "🎓", label: "Toets", color: "text-amber-700 dark:text-amber-400", prompt: "Geef me een tip voor de toets over deze lesstof. Waar moet ik extra op letten?", tooltip: "Handige tip voor de toets" },
-            { emoji: "🎤", label: "Rap", color: "text-pink-600 dark:text-pink-400", prompt: "Rap over de lesstof van deze paragraaf! Gebruik de kernbegrippen en leerdoelen.", tooltip: "Buffy rapt de lesstof voor je" },
-            { emoji: "🔥", label: "Roast mij", color: "text-red-500 dark:text-red-400", prompt: "Roast mijn kennis over deze paragraaf! Stel me eerst één vraag over de lesstof, wacht op mijn antwoord, en roast me dan op basis van wat ik zeg — maar corrigeer me daarna wel met het goede antwoord.", tooltip: "Buffy roast jouw kennis (maar leert je wel wat)" },
-            { emoji: "🤔", label: "Wat als...?", color: "text-cyan-600 dark:text-cyan-400", prompt: "Stel me een gekke 'wat als' vraag over de lesstof van deze paragraaf. Iets absurds maar wel gebaseerd op de biologie van deze les.", tooltip: "Een absurde hypothetische vraag over de lesstof" },
-            { emoji: "👴", label: "Opa-uitleg", color: "text-stone-500 dark:text-stone-400", prompt: "Leg de lesstof van deze paragraaf uit alsof je het aan mijn opa uitlegt die echt niks van biologie weet. Simpel, grappig en met alledaagse voorbeelden.", tooltip: "Uitleg alsof je het aan opa vertelt" },
+            { emoji: "📋", label: "Samenvatting",  color: "text-gres-blue dark:text-gres-blue",          fresh: false, prompt: "Geef me een korte samenvatting van deze paragraaf in bullet points", tooltip: "Geeft je een overzichtelijke samenvatting van de les" },
+            { emoji: "🧠", label: "Begrippen",     color: "text-green-600 dark:text-green-400",          fresh: true,  prompt: "Oefen met mij de kernbegrippen van deze paragraaf! Noem steeds één begrip en laat mij de definitie geven.", tooltip: "Oefent de begrippen met je zodat je ze onthoudt" },
+            { emoji: "🎲", label: "Quiz",           color: "text-purple-600 dark:text-purple-400",       fresh: true,  prompt: "Start een quiz over deze paragraaf! Stel me meerdere vragen één voor één en houd mijn score bij.", tooltip: "Start een quiz met score" },
+            { emoji: "💡", label: "Metafoor",      color: "text-yellow-600 dark:text-yellow-400",        fresh: false, prompt: "Leg de lesstof uit met een metafoor die makkelijk te begrijpen is", tooltip: "Vergelijking die je makkelijk onthoudt" },
+            { emoji: "🌍", label: "Jouw wereld",   color: "text-teal-600 dark:text-teal-400",            fresh: true,  prompt: "Ik wil de lesstof uitgelegd krijgen met een voorbeeld uit mijn eigen wereld. Vraag me eerst kort: welk onderwerp vind ik leuk? (bijv. sport, games, muziek, koken, dieren...) en gebruik dat dan als voorbeeld.", tooltip: "Buffy vraagt wat jij leuk vindt en gebruikt dat als voorbeeld" },
+            { emoji: "❓", label: "Waarom?",       color: "text-red-500 dark:text-red-400",              fresh: false, prompt: "Waarom is deze lesstof belangrijk? Waar heb ik dit voor nodig?", tooltip: "Waarom moet je dit leren?" },
+            { emoji: "🎓", label: "Toets",         color: "text-amber-700 dark:text-amber-400",          fresh: false, prompt: "Geef me een tip voor de toets over deze lesstof. Waar moet ik extra op letten?", tooltip: "Handige tip voor de toets" },
+            { emoji: "🎤", label: "Rap",            color: "text-pink-600 dark:text-pink-400",           fresh: false, prompt: "Rap over de lesstof van deze paragraaf! Gebruik de kernbegrippen en leerdoelen.", tooltip: "Buffy rapt de lesstof voor je" },
+            { emoji: "🔥", label: "Roast mij",     color: "text-red-500 dark:text-red-400",              fresh: true,  prompt: "Roast mijn kennis over deze paragraaf! Stel me eerst één vraag over de lesstof, wacht op mijn antwoord, en roast me dan op basis van wat ik zeg — maar corrigeer me daarna wel met het goede antwoord.", tooltip: "Buffy roast jouw kennis (maar leert je wel wat)" },
+            { emoji: "🤔", label: "Wat als...?",   color: "text-cyan-600 dark:text-cyan-400",            fresh: true,  prompt: "Stel me een korte 'wat als' vraag over de lesstof van deze paragraaf. Biologisch relevant, licht grappig maar niet te absurd. Max 2 zinnen.", tooltip: "Een hypothetische vraag over de lesstof" },
+            { emoji: "👴", label: "Opa-uitleg",    color: "text-stone-500 dark:text-stone-400",          fresh: false, prompt: "Leg de lesstof van deze paragraaf uit alsof je het aan mijn opa uitlegt die echt niks van biologie weet. Simpel, grappig en met alledaagse voorbeelden.", tooltip: "Uitleg alsof je het aan opa vertelt" },
           ].map((item) => (
             <button
               key={item.label}
-              onClick={() => handleBubbleClick(item.prompt)}
+              onClick={() => handleBubbleClick(item.prompt, item.fresh)}
               disabled={isLoading}
               onMouseEnter={(e) => {
                 const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
