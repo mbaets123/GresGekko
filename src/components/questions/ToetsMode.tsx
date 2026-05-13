@@ -482,7 +482,7 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
               🦬
             </div>
             <div>
-              <h3 className="font-bold text-foreground">Toets-modus</h3>
+              <h3 className="font-bold text-foreground">Oefentoets</h3>
               <p className="text-xs text-muted-foreground">{paragraphTitle}</p>
             </div>
             <button onClick={onClose}

@@ -45,7 +45,7 @@ export function ChapterToetsSection({
                 </span>
               </div>
               <CardTitle className="text-base font-semibold text-[#E94E5B]/80 transition-colors group-hover:text-[#E94E5B]">
-                Toets-modus
+                Oefentoets
               </CardTitle>
               <CardDescription className="text-sm">
                 {questions.length} vragen · kies paragrafen, niveau en tijdslimiet

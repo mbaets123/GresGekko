@@ -147,7 +147,7 @@ export function QuestionSection({ questions, paragraphId, paragraphTitle = "" }:
             className="group relative overflow-hidden rounded-2xl border bg-card p-5 text-center opacity-50 cursor-not-allowed"
           >
             <div className="mb-2 text-2xl">📝</div>
-            <p className="text-sm font-bold text-foreground">Toets-modus</p>
+            <p className="text-sm font-bold text-foreground">Oefentoets</p>
             <p className="mt-0.5 text-xs text-muted-foreground">Beschikbaar zodra er vragen zijn</p>
           </button>
         </div>
@@ -229,7 +229,7 @@ export function QuestionSection({ questions, paragraphId, paragraphTitle = "" }:
             )}
           >
             <span className="text-xs mr-1">📝</span>
-            Toets-modus
+            Oefentoets
           </button>
           <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-xl bg-gres-blue px-3 py-2 text-xs font-normal text-white opacity-0 shadow-lg transition-all duration-150 group-hover:opacity-100 text-center">
             Oefen alsof het een echte toets is
