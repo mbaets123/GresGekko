@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getChapter } from "@/lib/data";
 import { getChapterColors } from "@/lib/chapter-colors";
+import { getChapterQuestions } from "@/lib/questions";
+import { ChapterToetsSection } from "@/components/questions/ChapterToetsSection";
 
 interface ChapterPageProps {
   params: Promise<{ chapterId: string }>;
@@ -15,6 +17,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
   if (!chapter) return notFound();
 
   const colors = getChapterColors(chapter.order);
+  const paragraphIds = chapter.paragraphs.map((p) => p.id);
+  const chapterQuestions = await getChapterQuestions(paragraphIds);
 
   return (
     <>
@@ -104,6 +108,11 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
           ))}
         </div>
       </section>
+
+      <ChapterToetsSection
+        questions={chapterQuestions}
+        chapterTitle={`Hoofdstuk ${chapter.order}: ${chapter.title}`}
+      />
     </>
   );
 }
