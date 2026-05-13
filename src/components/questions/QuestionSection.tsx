@@ -98,10 +98,14 @@ interface QuestionSectionProps {
 export function QuestionSection({ questions, paragraphId, paragraphTitle = "" }: QuestionSectionProps) {
   const [activeLevel, setActiveLevel] = useState<number | null>(null);
   const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set());
+  const [correctIds,  setCorrectIds]  = useState<Set<string>>(new Set());
+  const [wrongIds,    setWrongIds]    = useState<Set<string>>(new Set());
   const [aiOpen, setAiOpen] = useState(false);
   const [aiCount, setAiCount] = useState(0);
-  const handleAnswered = useCallback((id: string) => {
+  const handleAnswered = useCallback((id: string, correct: boolean | null) => {
     setAnsweredIds((prev) => new Set(prev).add(id));
+    if (correct === true)  setCorrectIds((prev) => new Set(prev).add(id));
+    if (correct === false) setWrongIds((prev)   => new Set(prev).add(id));
   }, []);
 
   if (questions.length === 0) {
@@ -207,30 +211,30 @@ export function QuestionSection({ questions, paragraphId, paragraphTitle = "" }:
             <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gres-blue" />
           </span>
         </div>
-        {/* Progress bar — fills remaining width, color changes with progress */}
+        {/* Progress bar — groen = goed, rood = fout */}
         {(() => {
-          const pct = questions.length > 0 ? answeredIds.size / questions.length : 0;
-          const gradient = pct === 0
-            ? "from-gray-300 to-gray-400"
-            : pct < 0.25
-              ? "from-rose-400 to-pink-500"
-              : pct < 0.5
-                ? "from-orange-400 to-amber-500"
-                : pct < 0.75
-                  ? "from-cyan-400 to-blue-500"
-                  : pct < 1
-                    ? "from-violet-400 to-purple-500"
-                    : "from-emerald-400 to-green-500";
+          const total   = questions.length;
+          const correct = correctIds.size;
+          const wrong   = wrongIds.size;
+          const open    = answeredIds.size - correct - wrong; // open vragen (geen auto-beoordeling)
+          const pctCorrect = total > 0 ? correct / total : 0;
+          const pctWrong   = total > 0 ? wrong   / total : 0;
+          const pctOpen    = total > 0 ? open    / total : 0;
           return (
             <div className="ml-auto flex flex-1 items-center gap-2">
               <div className="relative h-2 w-full overflow-hidden rounded-full bg-gres-blue/10">
-                <div
-                  className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${gradient} transition-all duration-500 ease-out`}
-                  style={{ width: `${pct * 100}%` }}
-                />
+                {/* groen segment */}
+                <div className="absolute inset-y-0 left-0 rounded-l-full transition-all duration-500 ease-out"
+                  style={{ width: `${pctCorrect * 100}%`, background: "#8AB9AE" }} />
+                {/* rood segment */}
+                <div className="absolute inset-y-0 transition-all duration-500 ease-out"
+                  style={{ left: `${pctCorrect * 100}%`, width: `${pctWrong * 100}%`, background: "#E94E5B" }} />
+                {/* neutraal segment (open vragen) */}
+                <div className="absolute inset-y-0 transition-all duration-500 ease-out bg-gres-blue/40"
+                  style={{ left: `${(pctCorrect + pctWrong) * 100}%`, width: `${pctOpen * 100}%` }} />
               </div>
               <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">
-                {answeredIds.size}/{questions.length}
+                {answeredIds.size}/{total}
               </span>
             </div>
           );

@@ -19,7 +19,7 @@ const DIFFICULTY_LABELS: Record<number, string> = {
 interface QuestionCardProps {
   question: Question;
   index: number;
-  onAnswered?: (questionId: string) => void;
+  onAnswered?: (questionId: string, correct: boolean | null) => void;
 }
 
 export function QuestionCard({ question, index, onAnswered }: QuestionCardProps) {
@@ -32,7 +32,7 @@ export function QuestionCard({ question, index, onAnswered }: QuestionCardProps)
     if (question.type === "open") {
       setIsCorrect(false);
       setSubmitted(true);
-      onAnswered?.(question.id);
+      onAnswered?.(question.id, null); // open vragen: geen auto-beoordeling
       return;
     }
     const correct = question.type === "fill-in"
@@ -40,7 +40,7 @@ export function QuestionCard({ question, index, onAnswered }: QuestionCardProps)
       : normalize(answer) === normalize(question.answer);
     setIsCorrect(correct);
     setSubmitted(true);
-    onAnswered?.(question.id);
+    onAnswered?.(question.id, correct);
   }
 
   function handleRetry() {
