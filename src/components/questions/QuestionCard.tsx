@@ -100,11 +100,14 @@ export function QuestionCard({ question, index, onAnswered }: QuestionCardProps)
 
   return (
     <div
-      className={cn(
-        "rounded-2xl border bg-card p-5 transition-all",
-        submitted && isCorrect && "border-green-300 bg-green-50/50 dark:bg-green-950/30 dark:border-green-800",
-        submitted && !isCorrect && "border-orange-300 bg-orange-50/50 dark:bg-orange-950/30 dark:border-orange-800"
-      )}
+      className="rounded-2xl border bg-card p-5 transition-all"
+      style={
+        submitted && isCorrect
+          ? { borderColor: "#8AB9AE", backgroundColor: "rgba(138,185,174,0.10)" }
+          : submitted && !isCorrect
+          ? { borderColor: "#E94E5B", backgroundColor: "rgba(233,78,91,0.08)" }
+          : undefined
+      }
     >
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
@@ -229,12 +232,12 @@ export function QuestionCard({ question, index, onAnswered }: QuestionCardProps)
             </div>
           ) : (
             <div
-              className={cn(
-                "rounded-xl p-4",
+              className="rounded-xl p-4 border"
+              style={
                 isCorrect
-                  ? "bg-green-100/80 border border-green-200 dark:bg-green-950/40 dark:border-green-800"
-                  : "bg-orange-100/80 border border-orange-200 dark:bg-orange-950/40 dark:border-orange-800"
-              )}
+                  ? { backgroundColor: "rgba(138,185,174,0.20)", borderColor: "#8AB9AE" }
+                  : { backgroundColor: "rgba(233,78,91,0.10)", borderColor: "#E94E5B" }
+              }
             >
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-lg">{isCorrect ? "✅" : "❌"}</span>
