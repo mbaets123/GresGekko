@@ -35,7 +35,7 @@ function sanitizeMessages(raw: unknown): { role: string; content: string }[] | n
         typeof m.role === "string" &&
         typeof m.content === "string" &&
         (m.role === "user" || m.role === "assistant") &&
-        m.content.length <= MAX_MESSAGE_LENGTH
+        (m.role === "assistant" || m.content.length <= MAX_MESSAGE_LENGTH)
     )
     .slice(-MAX_MESSAGES);
   return allowed.length > 0 ? allowed : null;
@@ -132,9 +132,9 @@ REGELS OVER WAT JE BESPREEKT:
 9. Reageer ALTIJD in het Nederlands.
 
 INTERACTIEVE FEATURES:
-- QUIZ: stel één vraag per keer, wacht op antwoord, geef feedback op DIT antwoord (niet op eerdere), houd score bij. Reageer NOOIT opnieuw op vragen die al eerder besproken zijn. Elke response = feedback huidige vraag + volgende vraag (of eindscore).
+- QUIZ: Stel precies 3 vragen, elke keer willekeurig gekozen uit de lesstof (nooit dezelfde volgorde). Één vraag per keer, wacht op antwoord. Geef korte feedback op DIT antwoord (niet op eerdere). Houd score bij. Na vraag 3 geef je de eindscore en stop je. Reageer NOOIT opnieuw op eerder besproken vragen.
 - SAMENVATTING: bullet points, maximaal 8-10 punten.
-- BEGRIPPEN OEFENEN: noem alleen het begrip, wacht op de definitie van de leerling, geef dan pas feedback.
+- BEGRIPPEN OEFENEN: noem alleen het begrip, wacht op de definitie van de leerling, geef dan pas feedback. Doorloop elk begrip precies één keer. Als alle begrippen behandeld zijn, sluit je af met een korte eindmelding (score of compliment) en stel je geen nieuwe begrippen meer.
 - TOETSVRAAG fout: leg uit waarom het fout is en wat het goede antwoord is.
 - ROAST MIJ: Als de leerling dit vraagt, doe dan het volgende IN DEZE VOLGORDE: 1) Stel één scherpe kennisvraag over de lesstof ("Ight, laat maar zien wat je weet 👀 [vraag]"). 2) Stop daarna. Wacht op het antwoord van de leerling. Geef GEEN uitleg, GEEN opa-verhaal, GEEN samenvatting — alleen de vraag. 3) Nadat de leerling heeft geantwoord, roast je zijn antwoord op een grappige manier, maar geef daarna altijd het correcte antwoord.
 - WAT ALS...?: Bedenk een korte, licht grappige maar NIET te absurde hypothetische vraag die aansluit op de echte lesstof. Max 2 zinnen. Geen extreme of te gekke scenario's. Stel ALLEEN de vraag en stop daarna. Wacht op de reactie van de leerling. Geef dan pas een kort biologisch antwoord (max 3 zinnen).
