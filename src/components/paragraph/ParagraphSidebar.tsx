@@ -102,7 +102,7 @@ export function ParagraphSidebar({ chapter }: ParagraphSidebarProps) {
             </ul>
             <div className="mt-3 border-t border-gres-blue/10 pt-3 px-1">
               <Link
-                href={`/hoofdstuk/${chapter.id}`}
+                href="/"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-gres-blue/5 px-3 py-2 text-xs font-medium text-gres-blue transition hover:bg-gres-blue/10"
               >
                 ← Terug naar hoofdmenu
