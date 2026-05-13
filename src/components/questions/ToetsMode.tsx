@@ -111,7 +111,8 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
   const [assessTotal,    setAssessTotal]    = useState(0);
 
   /* ── results state ── */
-  const [showReview, setShowReview] = useState(false);
+  const [showReview, setShowReview]   = useState(false);
+  const [stoppedEarly, setStoppedEarly] = useState(false);
 
   /* ── timer ── */
   const stopTimer = useCallback(() => {
@@ -172,9 +173,19 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
     setAnswers([]);
     setCurrentIdx(0);
     setCurrentAnswer("");
+    setStoppedEarly(false);
     assessRunning.current = false;
     startTimer(timeLimitSec);
     setPhase("questions");
+  }
+
+  /* ── stop test early ── */
+  function handleStopTest() {
+    stopTimer();
+    setTimeTaken(timeLimitSec - timeLeft);
+    setStoppedEarly(true);
+    // Only use answers submitted so far — no remaining questions added
+    moveToNextPhase(answers);
   }
 
   /* ── submit answer ── */
@@ -296,10 +307,15 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
   const fullyCorrectCount = answers.filter(a => a.score === 1).length;
   const partialCount      = answers.filter(a => a.score === 0.5).length;
   const skippedCount      = answers.filter(a => a.skipped).length;
-  const cijfer            = calcCijfer(totalPoints, testQuestions.length);
+  // When stopped early: grade is based on attempted questions only
+  const gradeDenominator  = stoppedEarly ? answers.length : testQuestions.length;
+  const cijfer            = calcCijfer(totalPoints, gradeDenominator);
 
   const diffBreakdown = [1, 2, 3, 4].map(d => {
-    const qs  = testQuestions.filter(q => q.difficulty === d);
+    // When stopped early, only count questions the student actually reached
+    const qs  = stoppedEarly
+      ? testQuestions.filter(q => q.difficulty === d && answers.some(a => a.questionId === q.id))
+      : testQuestions.filter(q => q.difficulty === d);
     const pts = qs.reduce((s, q) => s + (answers.find(a => a.questionId === q.id)?.score ?? 0), 0);
     return { diff: d, total: qs.length, pts };
   }).filter(d => d.total > 0);
@@ -551,6 +567,13 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors">
                   Overslaan
                 </button>
+                {answers.length > 0 && (
+                  <button onClick={handleStopTest}
+                    className="ml-auto text-xs font-medium transition-colors hover:opacity-70"
+                    style={{ color: C }}>
+                    ■ Stop toets
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -603,6 +626,11 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
             <p className="mt-1 text-sm font-semibold text-muted-foreground">
               {passed ? "✅ Voldoende!" : "❌ Onvoldoende"}
             </p>
+            {stoppedEarly && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Toets gestopt na {answers.length} van {testQuestions.length} vragen · {formatTime(timeTaken)} gespendeerd
+              </p>
+            )}
           </div>
 
           {/* Stats */}
@@ -610,7 +638,11 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
             {[
               { label: "Goed",         value: String(fullyCorrectCount), icon: "✅"  },
               { label: "Deels goed",   value: String(partialCount),      icon: "〰️" },
-              { label: "Overgeslagen", value: String(skippedCount),      icon: "⏭️" },
+              { label: stoppedEarly ? "Niet gemaakt" : "Overgeslagen",
+                value: stoppedEarly
+                  ? String(testQuestions.length - answers.length)
+                  : String(skippedCount),
+                icon: "⏭️" },
               { label: "Tijd",         value: formatTime(timeTaken),      icon: "⏱️" },
             ].map(({ label, value, icon }) => (
               <div key={label} className="rounded-xl border bg-card p-3 text-center">
