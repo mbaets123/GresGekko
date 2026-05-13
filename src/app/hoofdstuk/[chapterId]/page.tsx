@@ -112,6 +112,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
       <ChapterToetsSection
         questions={chapterQuestions}
         chapterTitle={`Hoofdstuk ${chapter.order}: ${chapter.title}`}
+        paragraphs={chapter.paragraphs.map(p => ({ id: p.id, title: `${chapter.order}.${p.order} ${p.title}` }))}
       />
     </>
   );
