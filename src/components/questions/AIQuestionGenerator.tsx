@@ -451,20 +451,24 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle, onQuestion
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gres-blue text-lg shadow-md">
               🦬
             </span>
-            <div className={cn(
-              "rounded-2xl rounded-tl-sm border px-4 py-2.5 shadow-sm",
-              question.type === "open"
-                ? evaluation
-                  ? evaluation.score === "goed"
-                    ? "bg-green-50 dark:bg-green-950/30 border-green-200"
-                    : evaluation.score === "deels"
-                      ? "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200"
-                      : "bg-orange-50 dark:bg-orange-950/30 border-orange-200"
-                  : "bg-gres-blue/5 border-gres-blue/15"
-                : isCorrect
-                  ? "bg-green-50 dark:bg-green-950/30 border-green-200"
-                  : "bg-orange-50 dark:bg-orange-950/30 border-orange-200"
-            )}>
+            <div
+              className={cn(
+                "rounded-2xl rounded-tl-sm border px-4 py-2.5 shadow-sm",
+                question.type === "open" && !evaluation ? "bg-gres-blue/5 border-gres-blue/15" : "",
+                question.type === "open" && evaluation?.score === "deels" ? "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200" : "",
+              )}
+              style={
+                question.type === "open"
+                  ? evaluation?.score === "goed"
+                    ? { backgroundColor: "rgba(138,185,174,0.15)", borderColor: "#8AB9AE" }
+                    : evaluation?.score === "fout"
+                    ? { backgroundColor: "rgba(233,78,91,0.08)", borderColor: "#E94E5B" }
+                    : undefined
+                  : isCorrect
+                  ? { backgroundColor: "rgba(138,185,174,0.15)", borderColor: "#8AB9AE" }
+                  : { backgroundColor: "rgba(233,78,91,0.08)", borderColor: "#E94E5B" }
+              }
+            >
               {question.type === "open" ? (
                 <div className="text-sm font-medium text-foreground">
                   <p>
@@ -530,12 +534,12 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle, onQuestion
               /* MC / fill-in: compact score */
               <div className="space-y-3">
                 <div
-                  className={cn(
-                    "rounded-xl px-4 py-3 border",
+                  className="rounded-xl px-4 py-3 border"
+                  style={
                     isCorrect
-                      ? "bg-green-100/80 border-green-200 dark:bg-green-950/40 dark:border-green-800"
-                      : "bg-orange-100/80 border-orange-200 dark:bg-orange-950/40 dark:border-orange-800"
-                  )}
+                      ? { backgroundColor: "rgba(138,185,174,0.15)", borderColor: "#8AB9AE" }
+                      : { backgroundColor: "rgba(233,78,91,0.08)", borderColor: "#E94E5B" }
+                  }
                 >
                   <p className="text-sm">
                     <span className="font-bold">{isCorrect ? "✅ Goed zo!" : "❌ Helaas, niet juist."}</span>
