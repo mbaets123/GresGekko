@@ -247,7 +247,7 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
 
           <Separator className="bg-gres-blue/10" />
 
-          <QuestionSection questions={questions} paragraphId={paragraphId} />
+          <QuestionSection questions={questions} paragraphId={paragraphId} paragraphTitle={paragraph.title} />
         </div>
     </div>
   );

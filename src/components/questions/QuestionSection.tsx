@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { QuestionCard } from "./QuestionCard";
 import { AIQuestionGenerator } from "./AIQuestionGenerator";
+import { ToetsMode } from "./ToetsMode";
 import { cn } from "@/lib/utils";
 import type { Question } from "@/types";
 
@@ -92,13 +93,15 @@ function LevelButton({
 interface QuestionSectionProps {
   questions: Question[];
   paragraphId: string;
+  paragraphTitle?: string;
 }
 
-export function QuestionSection({ questions, paragraphId }: QuestionSectionProps) {
+export function QuestionSection({ questions, paragraphId, paragraphTitle = "" }: QuestionSectionProps) {
   const [activeLevel, setActiveLevel] = useState<number | null>(null);
   const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set());
   const [aiOpen, setAiOpen] = useState(false);
   const [aiCount, setAiCount] = useState(0);
+  const [toetsOpen, setToetsOpen] = useState(false);
 
   const handleAnswered = useCallback((id: string) => {
     setAnsweredIds((prev) => new Set(prev).add(id));
@@ -137,6 +140,15 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
             <div className="mb-2 text-2xl transition-transform group-hover:scale-110">🦬</div>
             <p className="text-sm font-bold text-gres-blue">AI Vraag</p>
             <p className="mt-0.5 text-xs text-muted-foreground">Genereer een nieuwe vraag</p>
+          </button>
+          {/* Toets-modus card (disabled when no questions) */}
+          <button
+            disabled
+            className="group relative overflow-hidden rounded-2xl border bg-card p-5 text-center opacity-50 cursor-not-allowed"
+          >
+            <div className="mb-2 text-2xl">📝</div>
+            <p className="text-sm font-bold text-foreground">Toets-modus</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Beschikbaar zodra er vragen zijn</p>
           </button>
         </div>
         {aiOpen && (
@@ -180,7 +192,7 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
               desc={desc}
               count={count}
               isActive={isActive}
-              onClick={() => { setActiveLevel(isActive ? null : level); setAiOpen(false); }}
+              onClick={() => { setActiveLevel(isActive ? null : level); setAiOpen(false); setToetsOpen(false); }}
               disabled={count === 0}
             />
           );
@@ -188,7 +200,7 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
         {/* AI generate button */}
         <div className="relative group">
           <button
-            onClick={() => { setAiOpen(true); setActiveLevel(null); }}
+            onClick={() => { setAiOpen(true); setActiveLevel(null); setToetsOpen(false); }}
             className={cn(
               "relative overflow-hidden rounded-full border-2 border-dashed border-gres-yellow/40 px-4 py-2 text-sm font-medium transition-all hover:border-gres-yellow hover:bg-gres-yellow/15 hover:shadow-md",
               aiOpen ? "border-gres-yellow bg-gres-yellow/15 shadow-md" : "bg-gres-yellow/5"
@@ -204,6 +216,23 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
           </button>
           <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-xl bg-gres-blue px-3 py-2 text-xs font-normal text-white opacity-0 shadow-lg transition-all duration-150 group-hover:opacity-100 text-center">
             Oneindig veel vragen met feedback
+            <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gres-blue" />
+          </span>
+        </div>
+        {/* Toets-modus button */}
+        <div className="relative group">
+          <button
+            onClick={() => { setToetsOpen(true); setAiOpen(false); setActiveLevel(null); }}
+            className={cn(
+              "relative overflow-hidden rounded-full border px-4 py-2 text-sm font-medium transition-all hover:shadow-sm hover:border-gres-blue/30",
+              toetsOpen ? "border-gres-blue bg-gres-blue text-white shadow-md" : "bg-card"
+            )}
+          >
+            <span className="text-xs mr-1">📝</span>
+            Toets-modus
+          </button>
+          <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-xl bg-gres-blue px-3 py-2 text-xs font-normal text-white opacity-0 shadow-lg transition-all duration-150 group-hover:opacity-100 text-center">
+            Oefen alsof het een echte toets is
             <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gres-blue" />
           </span>
         </div>
@@ -237,15 +266,15 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
         })()}
       </div>
 
-      {/* Hint when no level selected and AI not open */}
-      {!activeLevel && !aiOpen && (
+      {/* Hint when nothing is open */}
+      {!activeLevel && !aiOpen && !toetsOpen && (
         <p className="text-center text-sm text-muted-foreground py-4">
           Klik op een niveau hierboven om de vragen te bekijken
         </p>
       )}
 
       {/* Questions with fade-in animation */}
-      {filteredQuestions.length > 0 && !aiOpen && (
+      {filteredQuestions.length > 0 && !aiOpen && !toetsOpen && (
         <div key={activeLevel} className="space-y-4 animate-fade-in">
           {filteredQuestions.map((q, i) => (
             <QuestionCard key={q.id} question={q} index={i} onAnswered={handleAnswered} />
@@ -260,6 +289,15 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
           startOpen
           onIdle={() => setAiOpen(false)}
           onQuestionCompleted={() => setAiCount((c) => c + 1)}
+        />
+      )}
+
+      {/* Toets-modus */}
+      {toetsOpen && (
+        <ToetsMode
+          questions={questions}
+          paragraphTitle={paragraphTitle}
+          onClose={() => setToetsOpen(false)}
         />
       )}
     </section>
