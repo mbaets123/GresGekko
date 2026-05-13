@@ -140,7 +140,12 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
           </button>
         </div>
         {aiOpen && (
-          <AIQuestionGenerator paragraphId={paragraphId} startOpen onIdle={() => setAiOpen(false)} />
+          <AIQuestionGenerator
+            paragraphId={paragraphId}
+            startOpen
+            onIdle={() => setAiOpen(false)}
+            onQuestionCompleted={() => setAiCount((c) => c + 1)}
+          />
         )}
       </section>
     );
@@ -250,7 +255,12 @@ export function QuestionSection({ questions, paragraphId }: QuestionSectionProps
 
       {/* AI Question Generator — expanded below */}
       {aiOpen && (
-        <AIQuestionGenerator paragraphId={paragraphId} startOpen onIdle={() => setAiOpen(false)} />
+        <AIQuestionGenerator
+          paragraphId={paragraphId}
+          startOpen
+          onIdle={() => setAiOpen(false)}
+          onQuestionCompleted={() => setAiCount((c) => c + 1)}
+        />
       )}
     </section>
   );

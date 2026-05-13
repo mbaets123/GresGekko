@@ -6,9 +6,9 @@
 export const AI_MODEL = "google/gemini-2.5-flash";
 
 export const AI_SETTINGS = {
-  chat: { temperature: 0.9, max_tokens: 300 },
-  generate: { temperature: 0.85, max_tokens: 600 },
-  evaluate: { temperature: 0.3, max_tokens: 250 },
+  chat: { temperature: 0.9, max_tokens: 600 },
+  generate: { temperature: 0.85, max_tokens: 700 },
+  evaluate: { temperature: 0.3, max_tokens: 300 },
 } as const;
 
 /** Max characters of transcript to include in prompts */

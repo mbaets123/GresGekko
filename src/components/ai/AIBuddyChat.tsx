@@ -12,10 +12,9 @@ interface Message {
 
 interface AIBuddyChatProps {
   paragraphId: string;
-  paragraphTitle: string;
 }
 
-export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
+export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
   const storageKey = `biobuffel-chat-${paragraphId}`;
 
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -35,10 +34,24 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  // Sla berichten op in localStorage
+  // Sla berichten op in localStorage (met try/catch voor quota errors)
   useEffect(() => {
     if (messages.length > 0) {
-      localStorage.setItem(storageKey, JSON.stringify(messages));
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(messages));
+      } catch {
+        // localStorage vol — verwijder oudste gesprekken
+        try {
+          for (const key of Object.keys(localStorage)) {
+            if (key.startsWith("biobuffel-chat-")) {
+              localStorage.removeItem(key);
+            }
+          }
+          localStorage.setItem(storageKey, JSON.stringify(messages.slice(-20)));
+        } catch {
+          // Storage volledig onbeschikbaar, geen actie
+        }
+      }
     }
   }, [messages, storageKey]);
 

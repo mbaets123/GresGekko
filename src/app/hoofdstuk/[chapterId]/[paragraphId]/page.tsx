@@ -208,7 +208,7 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
                     Buffy
                   </h3>
                 </div>
-                <AIBuddyChat paragraphId={paragraphId} paragraphTitle={paragraph.title} />
+                <AIBuddyChat paragraphId={paragraphId} />
               </div>
 
               {/* Slides */}

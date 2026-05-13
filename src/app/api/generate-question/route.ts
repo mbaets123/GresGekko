@@ -48,24 +48,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { data: concepts } = await supabaseServer
-    .from("concepts")
-    .select("term, definition")
-    .eq("paragraph_id", paragraphId)
-    .order("order");
+  // Fetch concepts, goals and source questions in parallel
+  const [conceptsRes, goalsRes, dbQuestionsRes] = await Promise.all([
+    supabaseServer.from("concepts").select("term, definition").eq("paragraph_id", paragraphId).order("order"),
+    supabaseServer.from("learning_goals").select("text").eq("paragraph_id", paragraphId).order("order"),
+    supabaseServer.from("questions").select("question, answer, type, options").eq("paragraph_id", paragraphId).eq("difficulty", difficulty),
+  ]);
 
-  const { data: goals } = await supabaseServer
-    .from("learning_goals")
-    .select("text")
-    .eq("paragraph_id", paragraphId)
-    .order("order");
-
-  // Fetch a source question from the database to base the variation on
-  const { data: dbQuestions } = await supabaseServer
-    .from("questions")
-    .select("question, answer, type, options")
-    .eq("paragraph_id", paragraphId)
-    .eq("difficulty", difficulty);
+  const concepts = conceptsRes.data;
+  const goals = goalsRes.data;
+  const { data: dbQuestions } = dbQuestionsRes;
 
   // Pick a random source question, avoiding ones similar to previousQuestions
   let sourceQuestion: { question: string; answer: string; type: string; options: string[] | null } | null = null;
@@ -238,6 +230,32 @@ Voor open:
     if (!question.type || !question.question || !question.answer || !question.explanation) {
       console.error("[generate-question] Missing fields:", JSON.stringify(question));
       return Response.json({ error: "Ongeldige vraag ontvangen." }, { status: 500 });
+    }
+
+    // For MC: ensure options is an array of 4 and answer is one of them
+    if (question.type === "multiple-choice") {
+      if (!Array.isArray(question.options) || question.options.length < 2) {
+        console.error("[generate-question] Invalid options:", JSON.stringify(question.options));
+        return Response.json({ error: "Ongeldige vraag ontvangen. Probeer het opnieuw." }, { status: 500 });
+      }
+      // Normalize whitespace for comparison
+      const normalize = (s: string) => s.trim().toLowerCase();
+      const match = question.options.find(
+        (o: string) => normalize(o) === normalize(question.answer)
+      );
+      if (!match) {
+        // Try to find closest option and fix the answer field
+        const fixedAnswer = question.options.find(
+          (o: string) => normalize(question.answer).includes(normalize(o)) || normalize(o).includes(normalize(question.answer))
+        );
+        if (fixedAnswer) {
+          question.answer = fixedAnswer;
+        } else {
+          // Answer not in options at all — use first option as fallback and log
+          console.warn("[generate-question] Answer not in options, using first option. Answer:", question.answer, "Options:", question.options);
+          question.answer = question.options[0];
+        }
+      }
     }
 
     // Fire-and-forget analytics

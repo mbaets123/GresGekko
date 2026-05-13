@@ -17,11 +17,18 @@ export function isRateLimited(
   const map = rateMaps.get(bucket)!;
 
   const now = Date.now();
+
+  // Clean up expired entries to prevent memory leak
+  for (const [key, entry] of map) {
+    if (now > entry.resetAt) map.delete(key);
+  }
+
   const entry = map.get(ip);
   if (!entry || now > entry.resetAt) {
     map.set(ip, { count: 1, resetAt: now + windowMs });
     return false;
   }
   entry.count++;
-  return entry.count > limit;
+  // >= limit: the limit+1th request is blocked (not limit+2)
+  return entry.count >= limit;
 }

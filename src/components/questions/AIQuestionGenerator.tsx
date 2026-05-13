@@ -62,9 +62,11 @@ interface AIQuestionGeneratorProps {
   startOpen?: boolean;
   /** Called when generator returns to idle */
   onIdle?: () => void;
+  /** Called each time a question is answered (for parent counter) */
+  onQuestionCompleted?: () => void;
 }
 
-export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuestionGeneratorProps) {
+export function AIQuestionGenerator({ paragraphId, startOpen, onIdle, onQuestionCompleted }: AIQuestionGeneratorProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [intro, setIntro] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<number>(1);
@@ -79,6 +81,7 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
   const [showExample, setShowExample] = useState(false);
 
   const [selectedType, setSelectedType] = useState<QuestionType>("multiple-choice");
+  const abortRef = useRef<AbortController | null>(null);
 
   const startPicking = useCallback(() => {
     setIntro(randomIntro());
@@ -92,6 +95,10 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
     setQuestion(null);
     setError("");
 
+    // Abort any in-progress request
+    if (abortRef.current) abortRef.current.abort();
+    abortRef.current = new AbortController();
+
     const resolvedType = questionType === "random"
       ? (["multiple-choice", "open", "fill-in"] as const)[Math.floor(Math.random() * 3)]
       : questionType;
@@ -101,6 +108,7 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paragraphId, difficulty: selectedLevel, questionType: resolvedType, previousQuestions }),
+        signal: abortRef.current.signal,
       });
 
       if (!res.ok) {
@@ -114,14 +122,21 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
       setQuestion(data.question);
       setPreviousQuestions((prev) => [...prev, data.question.question]);
       setPhase("answering");
-    } catch {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") return;
       setError("Verbindingsfout. Probeer het opnieuw.");
       setPhase("picking");
     }
   }
 
+  function handleCancelLoading() {
+    abortRef.current?.abort();
+    setPhase("picking");
+  }
+
   async function handleSubmit() {
     if (!answer.trim() || !question) return;
+    onQuestionCompleted?.();
     if (question.type === "open") {
       setCount((c) => c + 1);
       setPhase("feedback");
@@ -304,20 +319,28 @@ export function AIQuestionGenerator({ paragraphId, startOpen, onIdle }: AIQuesti
     return (
       <div className="mt-6 animate-fade-in">
         <div className="rounded-2xl border-2 border-gres-yellow/30 bg-gradient-to-br from-gres-yellow/10 to-gres-blue/5 p-6">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gres-blue text-lg shadow-md animate-bounce">
-              🦬
-            </span>
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                Buffy denkt na over een goede vraag...
-              </p>
-              <div className="mt-1 flex gap-1">
-                <span className="h-2 w-2 rounded-full bg-gres-yellow animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="h-2 w-2 rounded-full bg-gres-yellow animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="h-2 w-2 rounded-full bg-gres-yellow animate-bounce" style={{ animationDelay: "300ms" }} />
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gres-blue text-lg shadow-md animate-bounce">
+                🦬
+              </span>
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Buffy denkt na over een goede vraag...
+                </p>
+                <div className="mt-1 flex gap-1">
+                  <span className="h-2 w-2 rounded-full bg-gres-yellow animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="h-2 w-2 rounded-full bg-gres-yellow animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="h-2 w-2 rounded-full bg-gres-yellow animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
               </div>
             </div>
+            <button
+              onClick={handleCancelLoading}
+              className="text-xs text-muted-foreground hover:text-red-500 transition-colors shrink-0"
+            >
+              ✕ Annuleer
+            </button>
           </div>
         </div>
       </div>

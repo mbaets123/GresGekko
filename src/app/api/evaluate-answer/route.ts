@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 import { isRateLimited } from "@/lib/rate-limit";
-import { AI_MODEL, AI_SETTINGS, RATE_LIMITS, requireApiKey, logUsage } from "@/lib/ai-config";
+import { AI_MODEL, AI_SETTINGS, TRANSCRIPT_LIMIT, RATE_LIMITS, requireApiKey, logUsage } from "@/lib/ai-config";
 
 export async function POST(req: NextRequest) {
   // API key check
@@ -28,27 +28,23 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Missing data" }, { status: 400 });
   }
 
-  // Fetch lesson context for better evaluation
+  // Fetch lesson context for better evaluation (parallel queries)
   let lessonContext = "";
   if (paragraphId) {
-    const { data: paragraph } = await supabaseServer
-      .from("paragraphs")
-      .select("title, transcript")
-      .eq("id", paragraphId)
-      .single();
+    const [paragraphRes, conceptsRes] = await Promise.all([
+      supabaseServer.from("paragraphs").select("title, transcript").eq("id", paragraphId).single(),
+      supabaseServer.from("concepts").select("term, definition").eq("paragraph_id", paragraphId).order("order"),
+    ]);
 
-    const { data: concepts } = await supabaseServer
-      .from("concepts")
-      .select("term, definition")
-      .eq("paragraph_id", paragraphId)
-      .order("order");
+    const paragraph = paragraphRes.data;
+    const concepts = conceptsRes.data;
 
     if (paragraph?.transcript) {
       const conceptsText = (concepts || [])
         .map((c) => c.definition ? `${c.term}: ${c.definition}` : c.term)
         .join("; ");
 
-      lessonContext = `\nLESSTOF CONTEXT (gebruik dit om te beoordelen of het antwoord inhoudelijk klopt):\nParagraaf: "${paragraph.title}"\nKernbegrippen: ${conceptsText}\nSamenvatting lesstof: ${paragraph.transcript.slice(0, 1500)}`;
+      lessonContext = `\nLESSTOF CONTEXT (gebruik dit om te beoordelen of het antwoord inhoudelijk klopt):\nParagraaf: "${paragraph.title}"\nKernbegrippen: ${conceptsText}\nSamenvatting lesstof: ${paragraph.transcript.slice(0, TRANSCRIPT_LIMIT)}`;
     }
   }
 
