@@ -68,6 +68,12 @@ function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
+/** ~6 vragen per 5 minuten, gecapt op beschikbare pool */
+function calcQuestionCount(timeLimitSec: number, poolSize: number): number {
+  const target = Math.round(timeLimitSec / 300 * 6);
+  return Math.min(target, poolSize);
+}
+
 function calcCijfer(points: number, total: number): number {
   if (total === 0) return 1;
   return Math.round(((points / total) * 9 + 1) * 10) / 10;
@@ -224,7 +230,8 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
   function startTest() {
     const pool = getPool();
     if (pool.length === 0) return;
-    const shuffled: ToetsQuestion[] = shuffle(pool).map(q => ({
+    const count = calcQuestionCount(timeLimitSec, pool.length);
+    const shuffled: ToetsQuestion[] = shuffle(pool).slice(0, count).map(q => ({
       ...q,
       shuffledOptions: q.options ? shuffle(q.options) : undefined,
     }));
@@ -469,6 +476,7 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
   /* ── INTRO ── */
   if (phase === "intro") {
     const pool = getPool();
+    const questionCount = calcQuestionCount(timeLimitSec, pool.length);
 
     return (
       <div className="mt-6 animate-fade-in">
@@ -525,16 +533,22 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
           <div className="mb-5">
             <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">⏱ Tijdlimiet</p>
             <div className="grid grid-cols-5 gap-2">
-              {TIME_OPTIONS.map(({ label, seconds }) => (
-                <button key={seconds} onClick={() => setTimeLimitSec(seconds)}
-                  className={cn("rounded-xl border py-2.5 text-sm font-semibold transition-all",
-                    timeLimitSec === seconds ? "text-white shadow-md" : "bg-card")}
-                  style={timeLimitSec === seconds
-                    ? { background: C, borderColor: C }
-                    : { borderColor: `${C}35` }}>
-                  {label}
-                </button>
-              ))}
+              {TIME_OPTIONS.map(({ label, seconds }) => {
+                const qCount = calcQuestionCount(seconds, pool.length);
+                return (
+                  <button key={seconds} onClick={() => setTimeLimitSec(seconds)}
+                    className={cn("rounded-xl border py-2.5 text-sm font-semibold transition-all flex flex-col items-center gap-0.5",
+                      timeLimitSec === seconds ? "text-white shadow-md" : "bg-card")}
+                    style={timeLimitSec === seconds
+                      ? { background: C, borderColor: C }
+                      : { borderColor: `${C}35` }}>
+                    <span>{label}</span>
+                    <span className={cn("text-[10px] font-normal", timeLimitSec === seconds ? "opacity-75" : "text-muted-foreground")}>
+                      ~{qCount}v
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -609,7 +623,7 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
             style={{ borderColor: `${C}20` }}>
             <p className="font-semibold text-foreground mb-2">📋 Spelregels</p>
             {[
-              `${pool.length} vragen — door elkaar geschud`,
+              `${questionCount} vragen uit ${pool.length} beschikbaar — door elkaar geschud`,
               "Geen feedback tijdens de toets",
               "Open vragen worden beoordeeld door Buffy: niet goed (0pt) / deels goed (0,5pt) / goed (1pt)",
               `Tijdlimiet: ${TIME_OPTIONS.find(t => t.seconds === timeLimitSec)?.label} — bij nul worden resterende vragen overgeslagen`,
@@ -626,7 +640,7 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
             <Button onClick={startTest} disabled={pool.length === 0}
               className="flex-1 text-white font-semibold hover:opacity-90 transition-opacity"
               style={{ background: C, border: "none" }}>
-              🚀 Start toets ({pool.length} vragen)
+              🚀 Start toets ({questionCount} vragen)
             </Button>
             <Button onClick={onClose} variant="outline" className="text-muted-foreground">
               Annuleren
