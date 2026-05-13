@@ -25,7 +25,7 @@ export function Header() {
               Biologie met Buffy
             </span>
             <span className="text-[10px] font-medium uppercase tracking-widest text-gres-yellow">
-              Leerjaar 1 vmbo - havo
+              Leerjaar 1 vmbo t - havo
             </span>
           </div>
         </Link>

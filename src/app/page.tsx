@@ -25,7 +25,7 @@ export default async function HomePage() {
             oefenen of gewoon even vragen wat je niet snapt? Ik ben er voor je 💪
           </p>
           <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-gres-yellow/20 px-4 py-1.5 text-sm font-medium text-gres-yellow backdrop-blur">
-            🎓 Leerjaar 1 &middot; vmbo - havo
+            🎓 Leerjaar 1 &middot; vmbo t - havo
           </div>
         </div>
       </section>

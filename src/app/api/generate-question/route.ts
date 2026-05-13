@@ -102,7 +102,7 @@ NIET DOEN: simpele feitenvragen of directe toepassing — de leerling moet echt 
     ? "De uitleg moet helder en leerzaam zijn (3-5 zinnen). Leg het verband uit dat de leerling moest zien."
     : "De uitleg moet kort, helder en leerzaam zijn (2-3 zinnen).";
 
-  const systemPrompt = `Je bent een biologiedocent die oefenvragen maakt voor vmbo-havo leerjaar 1.
+  const systemPrompt = `Je bent een biologiedocent die oefenvragen maakt voor vmbo t - havo leerjaar 1.
 
 OPDRACHT: Genereer precies 1 vraag op het onderstaande niveau.
 

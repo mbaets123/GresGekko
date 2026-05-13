@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,6 +30,7 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -286,13 +287,15 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
               key={item.label}
               onClick={() => handleBubbleClick(item.prompt)}
               disabled={isLoading}
-              className="group relative inline-flex items-center gap-0.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-0.5 text-[10px] font-medium transition hover:shadow-md hover:border-gray-300 disabled:opacity-50"
+              onMouseEnter={(e) => {
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                setTooltip({ text: item.tooltip, x: rect.left + rect.width / 2, y: rect.top });
+              }}
+              onMouseLeave={() => setTooltip(null)}
+              className="inline-flex items-center gap-0.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-0.5 text-[10px] font-medium transition hover:shadow-md hover:border-gray-300 disabled:opacity-50"
             >
               <span>{item.emoji}</span>
               <span className={item.color}>{item.label}</span>
-              <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 w-max max-w-[130px] whitespace-normal text-center rounded-xl bg-gres-blue px-3 py-2 text-[11px] font-normal text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
-                {item.tooltip}
-              </span>
             </button>
           ))}
         </div>
@@ -335,6 +338,16 @@ export function AIBuddyChat({ paragraphId, paragraphTitle }: AIBuddyChatProps) {
           )}
         </div>
       </div>
+
+      {/* Fixed tooltip — niet beperkt door overflow-hidden */}
+      {tooltip && (
+        <div
+          className="pointer-events-none fixed z-[9999] -translate-x-1/2 -translate-y-full rounded-xl bg-gres-blue px-3 py-2 text-[11px] font-normal text-white shadow-lg whitespace-nowrap"
+          style={{ left: tooltip.x, top: tooltip.y - 8 }}
+        >
+          {tooltip.text}
+        </div>
+      )}
     </div>
   );
 }

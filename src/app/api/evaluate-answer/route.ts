@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   }
 
   // System prompt bevat alleen instructies — geen user input
-  const systemPrompt = `Je bent een biologiedocent die het antwoord van een vmbo-havo leerling beoordeelt.
+  const systemPrompt = `Je bent een biologiedocent die het antwoord van een vmbo t - havo leerling beoordeelt.
 ${lessonContext}
 
 Beoordeel het antwoord van de leerling. Geef je antwoord UITSLUITEND als JSON:

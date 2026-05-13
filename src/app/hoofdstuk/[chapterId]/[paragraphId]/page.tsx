@@ -24,14 +24,13 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="flex gap-4">
-        {/* Sidebar - collapsible on all screens */}
-        <div className="fixed bottom-4 left-4 z-40 md:relative md:bottom-auto md:left-auto">
+        {/* Sidebar - altijd fixed, zweeft over de content */}
+        <div className="fixed bottom-4 left-4 z-40 md:top-20 md:bottom-auto">
           <ParagraphSidebar chapter={chapter} />
         </div>
 
         {/* Main content */}
-        <div className="min-w-0 flex-1 space-y-8">
+        <div className="space-y-8 md:pl-14">
           {/* Navigatie + Page title */}
           <div>
             {(() => {
@@ -89,52 +88,52 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
             </h1>
           </div>
 
-          {/* Twee-koloms hoofdlayout */}
-          <div className="grid gap-6 lg:grid-cols-[2fr_1fr] lg:items-start">
-
-            {/* Linkerkolom: leerdoelen + video + infographic */}
-            <div className="space-y-6">
-
-              {/* Leerdoelen & Begrippen */}
-              <section className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-gres-yellow/10">
-                <div className="grid gap-0 md:grid-cols-2">
-                  <div className="p-5">
-                    <div className="mb-3 flex items-center gap-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gres-blue text-xs text-white">
-                        🎯
-                      </span>
-                      <h2 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                        Deze les leer je..
-                      </h2>
-                    </div>
-                    <ul className="space-y-2">
-                      {paragraph.learningGoals.map((goal, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-sm leading-relaxed">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gres-yellow/30 text-xs text-gres-blue font-bold">
-                            ✓
-                          </span>
-                          <HighlightText text={goal} />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="border-t border-gres-yellow/20 p-5 md:border-l md:border-t-0">
-                    <div className="mb-3 flex items-center gap-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gres-yellow text-xs">
-                        📚
-                      </span>
-                      <h2 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
-                        Kernbegrippen
-                      </h2>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {paragraph.concepts.map((concept, i) => (
-                        <ConceptChip key={i} term={concept.term} definition={concept.definition} />
-                      ))}
-                    </div>
-                  </div>
+          {/* Leerdoelen & Begrippen — volle breedte */}
+          <section className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-gres-yellow/10">
+            <div className="grid gap-0 md:grid-cols-2">
+              <div className="p-6">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gres-blue text-xs text-white">
+                    🎯
+                  </span>
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                    Deze les leer je..
+                  </h2>
                 </div>
-              </section>
+                <ul className="space-y-2.5">
+                  {paragraph.learningGoals.map((goal, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm leading-relaxed">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gres-yellow/30 text-xs text-gres-blue font-bold">
+                        ✓
+                      </span>
+                      <HighlightText text={goal} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="border-t border-gres-yellow/20 p-6 md:border-l md:border-t-0">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gres-yellow text-xs">
+                    📚
+                  </span>
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
+                    Kernbegrippen
+                  </h2>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {paragraph.concepts.map((concept, i) => (
+                    <ConceptChip key={i} term={concept.term} definition={concept.definition} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Twee-koloms hoofdlayout */}
+          <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+
+            {/* Linkerkolom: video + infographic */}
+            <div className="space-y-6">
 
               {/* Video */}
               <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm">
@@ -198,18 +197,16 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
             </div>
 
             {/* Rechterkolom: AI chat + slides */}
-            <div className="flex flex-col gap-4 lg:sticky lg:top-4">
+            <div className="flex flex-col h-full">
+            <div className="flex flex-col gap-4 h-full">
 
               {/* AI Buddy */}
-              <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col h-[600px] lg:h-[700px]">
+              <div className="overflow-hidden rounded-2xl border border-gres-yellow/20 bg-card shadow-sm flex flex-col flex-1 min-h-[500px]">
                 <div className="flex items-center gap-2 border-b border-gres-yellow/20 bg-gres-yellow/10 px-4 py-3">
                   <span>🦬</span>
                   <h3 className="text-sm font-bold uppercase tracking-wider text-gres-blue">
                     Buffy
                   </h3>
-                  <span className="ml-auto rounded-full bg-gres-yellow/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gres-blue">
-                    Beta
-                  </span>
                 </div>
                 <AIBuddyChat paragraphId={paragraphId} paragraphTitle={paragraph.title} />
               </div>
@@ -245,13 +242,13 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
                 </div>
               </div>
             </div>
+            </div>
           </div>
 
           <Separator className="bg-gres-blue/10" />
 
           <QuestionSection questions={questions} paragraphId={paragraphId} />
         </div>
-      </div>
     </div>
   );
 }

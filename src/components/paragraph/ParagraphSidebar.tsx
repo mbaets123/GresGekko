@@ -105,7 +105,7 @@ export function ParagraphSidebar({ chapter }: ParagraphSidebarProps) {
                 href={`/hoofdstuk/${chapter.id}`}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-gres-blue/5 px-3 py-2 text-xs font-medium text-gres-blue transition hover:bg-gres-blue/10"
               >
-                ← Terug naar overzicht
+                ← Terug naar hoofdmenu
               </Link>
             </div>
           </nav>
