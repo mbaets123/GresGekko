@@ -782,13 +782,11 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
                 {/* ✅ FIX 2: stop with inline confirmation */}
                 <div className="ml-auto flex items-center gap-2">
                   {!stopConfirm ? (
-                    answers.length > 0 && (
-                      <button onClick={() => setStopConfirm(true)}
-                        className="text-xs font-medium transition-colors hover:opacity-70"
-                        style={{ color: C }}>
-                        ■ Stop toets
-                      </button>
-                    )
+                    <button onClick={() => setStopConfirm(true)}
+                      className="text-xs font-medium transition-colors hover:opacity-70"
+                      style={{ color: C }}>
+                      ■ Stop toets
+                    </button>
                   ) : (
                     <>
                       <span className="text-xs text-muted-foreground">Stoppen?</span>
