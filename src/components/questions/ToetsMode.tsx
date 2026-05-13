@@ -49,7 +49,7 @@ const TIME_OPTIONS = [
 
 const DIFF_LABELS: Record<number, { label: string; color: string }> = {
   1: { label: "Reproductie",      color: "text-green-600 dark:text-green-400"  },
-  2: { label: "Toepassen",        color: "text-blue-600 dark:text-blue-400"    },
+  2: { label: "Toepassen",        color: "text-[#E94E5B]"                     },
   3: { label: "Nieuwe situaties", color: "text-orange-600 dark:text-orange-400"},
   4: { label: "Inzicht",          color: "text-purple-600 dark:text-purple-400"},
 };
