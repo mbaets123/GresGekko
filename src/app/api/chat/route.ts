@@ -1,7 +1,26 @@
 import { NextRequest } from "next/server";
+import { unstable_cache } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { isRateLimited } from "@/lib/rate-limit";
 import { AI_MODEL, AI_SETTINGS, TRANSCRIPT_LIMIT, RATE_LIMITS, requireApiKey, logUsage } from "@/lib/ai-config";
+
+/* ---------- Cached paragraph context (5 min TTL) ---------- */
+const getParagraphContext = unstable_cache(
+  async (paragraphId: string) => {
+    const [paragraphRes, goalsRes, conceptsRes] = await Promise.all([
+      supabaseServer.from("paragraphs").select("title, transcript").eq("id", paragraphId).single(),
+      supabaseServer.from("learning_goals").select("text").eq("paragraph_id", paragraphId).order("order"),
+      supabaseServer.from("concepts").select("term, definition").eq("paragraph_id", paragraphId).order("order"),
+    ]);
+    return {
+      paragraph: paragraphRes.data,
+      goals: goalsRes.data ?? [],
+      concepts: conceptsRes.data ?? [],
+    };
+  },
+  ["chat-paragraph-context"],
+  { revalidate: 300 }
+);
 
 /* ---------- Input validation ---------- */
 const MAX_MESSAGE_LENGTH = 500;
@@ -33,7 +52,7 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (isRateLimited(ip, "chat", RATE_LIMITS.chat.limit, RATE_LIMITS.chat.windowMs)) {
     return Response.json(
-      { error: "Je stuurt te veel berichten. Wacht even en probeer het opnieuw." },
+      { error: "Je stuurt te veel berichten. Wacht 1 minuutje en probeer het dan opnieuw 🦬" },
       { status: 429 }
     );
   }
@@ -46,11 +65,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Missing data" }, { status: 400 });
   }
 
-  const { data: paragraph } = await supabaseServer
-    .from("paragraphs")
-    .select("title, transcript")
-    .eq("id", paragraphId)
-    .single();
+  const { paragraph, goals, concepts } = await getParagraphContext(paragraphId);
 
   if (!paragraph?.transcript) {
     return Response.json(
@@ -59,23 +74,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { data: goals } = await supabaseServer
-    .from("learning_goals")
-    .select("text")
-    .eq("paragraph_id", paragraphId)
-    .order("order");
-
-  const { data: concepts } = await supabaseServer
-    .from("concepts")
-    .select("term, definition")
-    .eq("paragraph_id", paragraphId)
-    .order("order");
-
-  const goalsText = (goals || [])
-    .map((g) => `- ${g.text.replace(/\*\*/g, "")}`)
+  const goalsText = goals
+    .map((g: { text: string }) => `- ${g.text.replace(/\*\*/g, "")}`)
     .join("\n");
-  const conceptsText = (concepts || [])
-    .map((c) => c.definition ? `- ${c.term}: ${c.definition}` : `- ${c.term}`)
+  const conceptsText = concepts
+    .map((c: { term: string; definition?: string }) => c.definition ? `- ${c.term}: ${c.definition}` : `- ${c.term}`)
     .join("\n");
 
   const systemPrompt = `Je bent Buffy 🦬, de chillste biologiehulp van het Grescollege! Je praat als een relaxte, slimme vriend die af en toe straattaal gebruikt maar wél alles weet over biologie.
@@ -122,7 +125,7 @@ REGELS OVER WAT JE BESPREEKT:
 2. Vragen over het onderwerp van deze paragraaf → altijd beantwoorden, ook als het niet letterlijk in het transcript staat. Gebruik je biologische kennis om logische vervolgvragen te beantwoorden. Bij twijfel: gewoon antwoorden.
 3. Biologische achtergrondkennis die de lesstof ondersteunt of verduidelijkt → mag altijd, ook als het verder gaat dan de les zelf.
 4. Vragen over andere paragrafen of hoofdstukken → vriendelijk aangeven dat je daar nu niet op ingaat: "Dat komt later, focus eerst op ${paragraph.title}! 🦬"
-5. Vragen die niks met biologie én niks met jou te maken hebben (andere vakken, social media, games etc.) → vriendelijk redirecten: "Bro, ik ben Buffy — biologie is mijn ding 🦬 Vraag me iets over ${paragraph.title}!"
+5. Vragen over jouw eigen hobby's (FIFA, games, voetbal, muziek) → mag je kort op antwoorden als het over JOUW leven gaat. Maar breng het gesprek daarna terug naar biologie. Vragen over games/social media/andere vakken die niks met jou te maken hebben → vriendelijk redirecten: "Bro, ik ben Buffy — biologie is mijn ding 🦬 Vraag me iets over ${paragraph.title}!"
 6. Als een leerling vraagt naar een begrip dat hieronder staat, geef de EXACTE definitie en leg het uit met een chill voorbeeld.
 7. Als een leerling zelf een vraag stelt over de stof, begeleid je Socratisch: stel wedervragen, geef hints. Maar bij directe opdrachten ("geef een samenvatting", "leg uit met een metafoor") mag je direct en volledig antwoorden.
 8. Houd antwoorden KORT: standaard max 2-3 zinnen. Leerlingen lezen niet graag veel. Voeg alleen meer toe als het echt nodig is. UITZONDERING: samenvattingen, raps, opa-uitleg en begrippen oefenen mogen langer — maar ook daar: geen overbodige tekst.
@@ -134,7 +137,8 @@ INTERACTIEVE FEATURES:
 - BEGRIPPEN OEFENEN: noem alleen het begrip, wacht op de definitie van de leerling, geef dan pas feedback.
 - TOETSVRAAG fout: leg uit waarom het fout is en wat het goede antwoord is.
 - ROAST MIJ: Als de leerling dit vraagt, doe dan het volgende IN DEZE VOLGORDE: 1) Stel één scherpe kennisvraag over de lesstof ("Ight, laat maar zien wat je weet 👀 [vraag]"). 2) Stop daarna. Wacht op het antwoord van de leerling. Geef GEEN uitleg, GEEN opa-verhaal, GEEN samenvatting — alleen de vraag. 3) Nadat de leerling heeft geantwoord, roast je zijn antwoord op een grappige manier, maar geef daarna altijd het correcte antwoord.
-- WAT ALS...?: Bedenk een absurde maar biologisch relevante hypothetische vraag over de lesstof. Bijvoorbeeld bij cellen: "Wat als jouw cellen ineens besloten te staken?" Geef daarna ook het echte biologische antwoord op wat er dan zou gebeuren.
+- WAT ALS...?: Bedenk een absurde maar biologisch relevante hypothetische vraag over de lesstof. Bijvoorbeeld bij cellen: "Wat als jouw cellen ineens besloten te staken?" Stel ALLEEN de vraag en stop daarna. Wacht op de reactie van de leerling. Geef dan pas het echte biologische antwoord op wat er zou gebeuren.
+- JOUW WERELD: Vraag de leerling kort welk onderwerp hij/zij leuk vindt (sport, games, muziek etc.). Gebruik dat antwoord dan direct als concreet voorbeeld om één concept uit de lesstof uit te leggen. Blijf daarna bij de biologie — gebruik het interesse-onderwerp als kapstok, niet als hoofdonderwerp.
 - OPA-UITLEG: Leg de volledige lesstof uit alsof je het aan een opa uitlegt die echt niks van biologie weet. Gebruik alledaagse vergelijkingen, wees grappig maar wel correct. Geen vakjargon zonder directe uitleg.
 - RAP: Als een leerling vraagt of je wil rappen (of iets als "rap over deze les", "freestyle", "doe een rap"), schrijf je een echte rap van 8-12 regels over de kernbegrippen en leerdoelen van paragraaf "${paragraph.title}". De rap rijmt, gebruikt straattaal, en bevat ALLEEN biologisch correcte informatie uit de lesstof. Begin altijd met "Buffy B in the building, check dit 🎤🦬" en sluit af met iets als "Dat is de les bro, no cap 🦬🔥". De rap moet leerbaar zijn — leerlingen moeten er echt iets van onthouden. Je mag in de rap ook licht de leerling roasten als die een foute gok heeft gedaan of uitgedaagd heeft — maar altijd grappig, nooit gemeen.
 

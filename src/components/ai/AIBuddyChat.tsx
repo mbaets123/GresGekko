@@ -56,10 +56,11 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
   }, [messages, storageKey]);
 
   useEffect(() => {
-    if (scrollRef.current) {
+    // Alleen naar beneden scrollen als de gebruiker al onderaan was (of nieuw bericht begint)
+    if (scrollRef.current && !showScrollBtn) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, showScrollBtn]);
 
   function handleScroll() {
     if (!scrollRef.current) return;
@@ -73,7 +74,7 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
 
   function handleBubbleClick(prompt: string) {
     if (isLoading) return;
-    handleSend(prompt, true);
+    handleSend(prompt);
   }
 
   async function handleSend(directText?: string, freshStart?: boolean) {
@@ -114,6 +115,12 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
       }
 
       const reader = res.body?.getReader();
+      if (!reader) {
+        setMessages([...newMessages, { role: "assistant", content: "Er ging iets mis met de verbinding. Probeer het opnieuw." }]);
+        setIsLoading(false);
+        return;
+      }
+
       const decoder = new TextDecoder();
       let assistantContent = "";
       let buffer = "";
@@ -169,10 +176,10 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
   function handleRefresh() {
     abortRef.current?.abort();
     setIsLoading(false);
-    // Verwijder het laatste (incomplete) assistant-bericht
+    // Verwijder altijd het laatste assistant-bericht (ook als het al gedeeltelijk gevuld is)
     setMessages((prev) => {
       const last = prev[prev.length - 1];
-      if (last?.role === "assistant" && !last.content) {
+      if (last?.role === "assistant") {
         return prev.slice(0, -1);
       }
       return prev;
@@ -316,11 +323,19 @@ export function AIBuddyChat({ paragraphId }: AIBuddyChatProps) {
 
       {/* Input */}
       <div className="border-t border-gres-blue/10 p-3">
+        {input.length > 400 && (
+          <p className={cn(
+            "mb-1 text-right text-[10px] font-medium",
+            input.length >= 500 ? "text-red-500" : "text-amber-500"
+          )}>
+            {input.length}/500{input.length >= 500 && " — te lang!"}
+          </p>
+        )}
         <div className="flex gap-2">
           <textarea
             ref={inputRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value.slice(0, 500))}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
