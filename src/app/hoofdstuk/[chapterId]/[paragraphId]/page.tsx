@@ -25,12 +25,12 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         {/* Sidebar - altijd fixed, zweeft over de content */}
-        <div className="fixed bottom-4 left-4 z-40 md:top-20 md:bottom-auto">
+        <div className="fixed bottom-4 right-4 z-40 md:top-20 md:bottom-auto">
           <ParagraphSidebar chapter={chapter} />
         </div>
 
         {/* Main content */}
-        <div className="space-y-8 md:pl-14">
+        <div className="space-y-8">
           {/* Navigatie + Page title */}
           <div>
             {(() => {

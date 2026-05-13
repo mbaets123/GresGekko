@@ -62,7 +62,7 @@ export function ParagraphSidebar({ chapter }: ParagraphSidebarProps) {
             className="fixed inset-0 z-20 bg-black/20"
             onClick={() => setOpen(false)}
           />
-          <nav className="relative z-30 mt-2 w-72 rounded-2xl border border-gres-blue/10 bg-card p-3 shadow-xl">
+          <nav className="absolute right-0 z-30 mt-2 w-72 rounded-2xl border border-gres-blue/10 bg-card p-3 shadow-xl">
             {/* Current paragraph indicator */}
             {activeParagraph && (
               <div className="mb-3 rounded-xl bg-gres-blue/5 px-3 py-2 text-xs text-muted-foreground">
