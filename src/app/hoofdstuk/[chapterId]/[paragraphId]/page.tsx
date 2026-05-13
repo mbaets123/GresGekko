@@ -224,7 +224,7 @@ export default async function ParagraphPage({ params }: ParagraphPageProps) {
                     🦬
                   </div>
                   <p className="flex-1 text-xs text-muted-foreground leading-relaxed">
-                    Download de PowerPoint van deze les om de stof op je eigen tempo te bestuderen.
+                    Als de docent deze PowerPoint tijdens de les heeft uitgelegd, kun je hem hier downloaden en op je gemak bekijken.
                   </p>
                   {paragraph.slideUrl ? (
                     <a
