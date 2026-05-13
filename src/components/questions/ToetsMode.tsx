@@ -622,16 +622,23 @@ export function ToetsMode({ questions, paragraphTitle, paragraphs, onClose }: To
           <div className="mb-5 rounded-xl border p-4 text-sm space-y-1.5 bg-white/60 dark:bg-gray-900/40"
             style={{ borderColor: `${C}20` }}>
             <p className="font-semibold text-foreground mb-2">📋 Spelregels</p>
-            {[
+            {([
               `${questionCount} vragen uit ${pool.length} beschikbaar — door elkaar geschud`,
               "Geen feedback tijdens de toets",
-              "Open vragen worden beoordeeld door Buffy: niet goed (0pt) / deels goed (0,5pt) / goed (1pt)",
+              null, // rendered separately below
               `Tijdlimiet: ${TIME_OPTIONS.find(t => t.seconds === timeLimitSec)?.label} — bij nul worden resterende vragen overgeslagen`,
               "Je kunt één vraag teruggaan en de toets vroegtijdig stoppen",
-            ].map((rule, i) => (
+            ] as (string | null)[]).map((rule, i) => (
               <p key={i} className="text-muted-foreground flex gap-2">
                 <span className="font-bold shrink-0" style={{ color: C }}>{i + 1}.</span>
-                {rule}
+                {rule !== null ? rule : (
+                  <span>
+                    Open vragen worden beoordeeld door Buffy:{" "}
+                    <span className="font-semibold" style={{ color: "#E94E5B" }}>niet goed</span> (0pt) /{" "}
+                    <span className="font-semibold text-gres-yellow">deels goed</span> (0,5pt) /{" "}
+                    <span className="font-semibold text-green-600 dark:text-green-400">goed</span> (1pt)
+                  </span>
+                )}
               </p>
             ))}
           </div>
